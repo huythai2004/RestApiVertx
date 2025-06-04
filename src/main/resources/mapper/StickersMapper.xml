@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.database.mapper.StickersMapper">
+    <resultMap id="StickersResultMap" type="org.example.database.model.Stickers">
+        <id property="id" column="id"/>
+        <result property="url" column="url"/>
+        <result property="packageId" column="packageId"/>
+        <result property="locale" column="locale"/>
+        <result property="order" column="order"/>
+        <result property="viewCount" column="viewCount"/>
+        <result property="createdDate" column="createdDate"/>
+        <result property="emojis" column="emojis"/>
+        <result property="isPremium" column="isPremium"/>
+    </resultMap>
+    <select id="getAllStickers" resultMap="StickersResultMap">
+        Select * from stickers
+    </select>
+    <select id="getStickerById" parameterType="int" resultMap="StickersResultMap">
+        Select * from stickers where id = #{id}
+    </select>
+    <insert id="insertSticker" parameterType="org.example.database.model.Stickers">
+        Insert into stickers (url, packageId, locale, order, viewCount, createdDate, emojis, isPremium)
+        Values (#{url}, #{packageId}, #{locale}, #{order}, #{viewCount}, #{createdDate}, #{emojis}, #{isPremium})
+    </insert>
+    <update id="updateSticker" parameterType="org.example.database.model.Stickers">
+        Update stickers
+        Set url         = #{url},
+            packageId   = #{packageId},
+            locale      = #{locale},
+            order       = #{order},
+            viewCount   = #{viewCount},
+            createdDate = #{createdDate},
+            emojis      = #{emojis},
+            isPremium   = #{isPremium}
+        Where id = #{id}
+    </update>
+    <delete id="deleteSticker" parameterType="int">
+        Delete
+        from stickers
+        where id = #{id}
+    </delete>
+</mapper>

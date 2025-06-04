@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.database.mapper.CategoriesMapper">
+    <resultMap id="CategoryResultMap" type="org.example.database.model.Category">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="url" column="url"/>
+        <result property="locale" column="locale"/>
+        <result property="order" column="order"/>
+        <result property="isDisplayed" column="isDisplayed"/>
+        <result property="packageCount" column="packageCount"/>
+        <result property="createdDate" column="createdDate"/>
+    </resultMap>
+
+    <select id="getAllCategories" resultMap="CategoryResultMap">
+        Select * from categories
+    </select>
+
+    <select id="getCategoryById" parameterType="int" resultMap="CategoryResultMap">
+        Select * from categories where id = #{id}
+    </select>
+
+    <insert id="insertCategory" parameterType="org.example.database.model.Category">
+        Insert into categories (name, url, locale, order, isDisplayed, packageCount, createdDate)
+        Values (#{name}, #{url}, #{locale}, #{order}, #{isDisplayed}, #{packageCount}, #{createdDate})
+    </insert>
+
+    <update id="updateCategory" parameterType="org.example.database.model.Category">
+        Update categories
+        Set name         = #{name},
+            url          = #{url},
+            locale       = #{locale},
+            order        = #{order},
+            isDisplayed  = #{isDisplayed},
+            packageCount = #{packageCount},
+            createdDate  = #{createdDate}
+        Where id = #{id}
+    </update>
+
+    <delete id="deleteCategory" parameterType="int">
+        Delete
+        from categories
+        where id = #{id}
+    </delete>
+
+</mapper>

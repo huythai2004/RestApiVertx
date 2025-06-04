@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.database.mapper.PackagesMapper">
+    <resultMap id="PackagesResultMap" type="org.example.database.model.Packages">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="creatorName" column="creatorName"/>
+        <result property="stickerCount" column="stickerCount"/>
+        <result property="adWhatsApp" column="adWhatsApp"/>
+        <result property="adTelegram" column="adTelegram"/>
+        <result property="viewCount" column="viewCount"/>
+        <result property="categoryIds" column="categoryIds"/>
+        <result property="isDisplayed" column="isDisplayed"/>
+        <result property="createdDate" column="createdDate"/>
+        <result property="locale" column="locale"/>
+        <result property="order" column="order"/>
+        <result property="isPremium" column="isPremium"/>
+        <result property="isAnimated" column="isAnimated"/>
+    </resultMap>
+
+    <select id="getAllPackages" resultMap="PackagesResultMap">
+    Select * from packages
+    </select>
+    <select id="getPackageById" parameterType="int" resultMap="PackagesResultMap">
+        Select * from packages where id = #{id}
+    </select>
+    <insert id="insertPackage" parameterType="org.example.database.model.Packages">
+        Insert into packages (name, creatorName, stickerCount, adWhatsApp, adTelegram, viewCount, categoryIds, isDisplayed, createdDate, locale, order, isPremium, isAnimated)
+        Values (#{name}, #{creatorName}, #{stickerCount}, #{adWhatsApp}, #{adTelegram}, #{viewCount}, #{categoryIds}, #{isDisplayed}, #{createdDate}, #{locale}, #{order}, #{isPremium}, #{isAnimated})
+    </insert>
+    <update id="updatePackage" parameterType="org.example.database.model.Packages">
+        Update packages
+        Set name          = #{name},
+            creatorName   = #{creatorName},
+            stickerCount  = #{stickerCount},
+            adWhatsApp    = #{adWhatsApp},
+            adTelegram    = #{adTelegram},
+            viewCount     = #{viewCount},
+            categoryIds   = #{categoryIds},
+            isDisplayed   = #{isDisplayed},
+            createdDate   = #{createdDate},
+            locale        = #{locale},
+            order         = #{order},
+            isPremium     = #{isPremium},
+            isAnimated    = #{isAnimated}
+        Where id = #{id}
+    </update>
+    <delete id="deletePackage" parameterType="int">
+        Delete
+        from packages
+        where id = #{id}
+    </delete>
+</mapper>
