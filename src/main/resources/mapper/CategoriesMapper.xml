@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.database.mapper.CategoriesMapper">
-    <resultMap id="CategoryResultMap" type="org.example.database.model.Category">
+    <resultMap id="CategoryResultMap" type="org.example.database.model.Categories">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="url" column="url"/>
@@ -18,28 +18,28 @@
         Select * from categories
     </select>
 
-    <select id="getCategoryById" parameterType="int" resultMap="CategoryResultMap">
+    <select id="getCategoriesById" parameterType="int" resultMap="CategoryResultMap">
         Select * from categories where id = #{id}
     </select>
 
-    <insert id="insertCategory" parameterType="org.example.database.model.Category">
-        Insert into categories (name, url, locale, order, isDisplayed, packageCount, createdDate)
+    <insert id="insertCategories" parameterType="org.example.database.model.Categories">
+        Insert into categories (name, url, locale, `order`, isDisplayed, packageCount, createdDate)
         Values (#{name}, #{url}, #{locale}, #{order}, #{isDisplayed}, #{packageCount}, #{createdDate})
     </insert>
 
-    <update id="updateCategory" parameterType="org.example.database.model.Category">
+    <update id="updateCategories" parameterType="org.example.database.model.Categories">
         Update categories
-        Set name         = #{name},
-            url          = #{url},
-            locale       = #{locale},
-            order        = #{order},
-            isDisplayed  = #{isDisplayed},
+        Set name = #{name},
+            url = #{url},
+            locale = #{locale},
+            `order` = #{order},
+            isDisplayed = #{isDisplayed},
             packageCount = #{packageCount},
-            createdDate  = #{createdDate}
+            createdDate = #{createdDate}
         Where id = #{id}
     </update>
 
-    <delete id="deleteCategory" parameterType="int">
+    <delete id="deleteCategories" parameterType="int">
         Delete
         from categories
         where id = #{id}

@@ -1,29 +1,60 @@
 package org.example.database.mapper;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.example.database.model.Packages;
 
 import java.util.List;
 
 public interface PackagesMapper {
     @Select("SELECT * FROM packages")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "creatorName", column = "creatorName"),
+            @Result(property = "stickerCount", column = "stickerCount"),
+            @Result(property = "addWhatsapp", column = "addWhatsapp"),
+            @Result(property = "addTelegram", column = "addTelegram"),
+            @Result(property = "viewCount", column = "viewCount"),
+            @Result(property = "categoryIds", column = "categoryIds"),
+            @Result(property = "isDisplayed", column = "isDisplayed"),
+            @Result(property = "createdDate", column = "createdDate"),
+            @Result(property = "locale", column = "locale"),
+            @Result(property = "order", column = "order"),
+            @Result(property = "isPremium", column = "isPremium"),
+            @Result(property = "isAnimated", column = "isAnimated")
+    })
     List<Packages> getAllPackages();
 
+    @Select("SELECT * FROM packages WHERE id = #{id}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "name", column = "name"),
+            @Result(property = "creatorName", column = "creatorName"),
+            @Result(property = "stickerCount", column = "stickerCount"),
+            @Result(property = "addWhatsapp", column = "addWhatsapp"),
+            @Result(property = "addTelegram", column = "addTelegram"),
+            @Result(property = "viewCount", column = "viewCount"),
+            @Result(property = "categoryIds", column = "categoryIds"),
+            @Result(property = "isDisplayed", column = "isDisplayed"),
+            @Result(property = "createdDate", column = "createdDate"),
+            @Result(property = "locale", column = "locale"),
+            @Result(property = "order", column = "order"),
+            @Result(property = "isPremium", column = "isPremium"),
+            @Result(property = "isAnimated", column = "isAnimated")
+    })
     Packages getPackageById(int id);
 
-    @Insert("INSERT INTO Packages (name, creatorName, stickerCount, adWhatapps, addTelegram, viewCount, categoryIds, " +
+    @Insert("INSERT INTO Packages (name, creatorName, stickerCount, addWhatsapp, addTelegram, viewCount, categoryIds, " +
             "isDisplayed, createdDate, locale, `order`, isPremium, isAnimated) " +
-            "VALUES (#{name}, #{creatorName}, #{stickerCount}, #{adWhatapps}, #{addTelegram}, #{viewCount}, " +
+            "VALUES (#{name}, #{creatorName}, #{stickerCount}, #{addWhatsapp}, #{addTelegram}, #{viewCount}, " +
             "#{categoryIds}, #{isDisplayed}, #{createdDate}, #{locale}, #{order}, #{isPremium}, #{isAnimated})")
+    @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertPackage(Packages packages);
 
-    @Update("UPDATE Packages SET name=#{name}, creatorName=#{creatorName}, stickerCount=#{stickerCount}, adWhatapps=#{adWhatapps}, "
+    @Update("UPDATE Packages SET name=#{name}, creatorName=#{creatorName}, stickerCount=#{stickerCount}, addWhatsapp=#{addWhatsapp}, "
             + "addTelegram=#{addTelegram}, viewCount=#{viewCount}, categoryIds=#{categoryIds}, isDisplayed=#{isDisplayed}, ")
     void updatePackage(Packages packages);
 
     @Delete("DELETE FROM Packages WHERE id=#{id}")
-    void deletePackage(int id);
+    void deletePackages( int id);
 }
