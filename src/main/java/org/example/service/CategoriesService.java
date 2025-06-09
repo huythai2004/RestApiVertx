@@ -27,7 +27,7 @@ public class CategoriesService {
                     // If not in cache, get from database
                     List<Categories> categories = categoriesMapper.getAllCategories();
                     if (categories != null && !categories.isEmpty()) {
-                        return cacheService.setCategories(categories)
+                        return cacheService.setAllCategories(categories)
                                 .map(v -> categories);
                     }
                     return Future.succeededFuture(Collections.emptyList());

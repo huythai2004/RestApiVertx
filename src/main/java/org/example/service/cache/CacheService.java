@@ -12,7 +12,7 @@ public interface CacheService {
     //Categories
     Future<List<Categories>> getAllCategories();
     Future<Categories> getCategoriesById(int id);
-    Future<Void> setCategories(List<Categories> categories);
+    Future<Void> setAllCategories(List<Categories> categories);
     Future<Void> setCategories(Categories category);
     Future<Void> deleteCategories(int id);
 
@@ -26,7 +26,7 @@ public interface CacheService {
     //Stickers
     Future<List<Stickers>> getAllStickers();
     Future<Stickers> getStickerById(int id);
-    Future<Void> setStickers(List<Stickers> stickers);
+    Future<Void> setAllStickers(List<Stickers> stickers);
     Future<Void> setSticker(Stickers sticker);
     Future<Void> deleteSticker(int id);
 }

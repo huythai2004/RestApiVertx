@@ -23,12 +23,14 @@ public class MyBatisUltil {
             Configuration configuration = new Configuration(environment);
 
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
+            System.out.println("MyBatis SQL Session Factory initialized successfully.");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public static SqlSessionFactory getSqlSessionFactory() {
+        System.out.println("MyBatis SQL Session Factory accessed.");
         return sqlSessionFactory;
     }
 }

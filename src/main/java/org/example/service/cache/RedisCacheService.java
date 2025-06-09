@@ -123,7 +123,7 @@ public class RedisCacheService implements CacheService {
     }
 
     @Override
-    public Future<Void> setCategories(List<Categories> categories) {
+    public Future<Void> setAllCategories(List<Categories> categories) {
         if (categories == null || categories.isEmpty()) {
             return Future.succeededFuture();
         }
@@ -397,7 +397,7 @@ public class RedisCacheService implements CacheService {
     }
 
     @Override
-    public Future<Void> setStickers(List<Stickers> stickers) {
+    public Future<Void> setAllStickers(List<Stickers> stickers) {
         if (stickers == null || stickers.isEmpty()) {
             return Future.succeededFuture();
         }

@@ -27,7 +27,7 @@ public class StickersService {
                     // If not in cache, get from database
                     List<Stickers> stickers = stickersMapper.getAllStickers();
                     if (stickers != null && !stickers.isEmpty()) {
-                        return cacheService.setStickers(stickers)
+                        return cacheService.setAllStickers(stickers)
                                 .map(v -> stickers);
                     }
                     return Future.succeededFuture(Collections.emptyList());
