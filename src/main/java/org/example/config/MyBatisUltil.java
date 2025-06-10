@@ -15,9 +15,9 @@ public class MyBatisUltil {
         try {
             PooledDataSource dataSource = new PooledDataSource();
             dataSource.setDriver("com.mysql.cj.jdbc.Driver");
-            dataSource.setUrl("jdbc:mysql://localhost:3306/utf8stickit?useSSL=true&serverTimezone=UTC");
-            dataSource.setUsername("root");
-            dataSource.setPassword("Huythai-27112004");
+            dataSource.setUrl("db.url");
+            dataSource.setUsername("db.username");
+            dataSource.setPassword("db.password");
 
             Environment environment = new Environment("development", new JdbcTransactionFactory(), dataSource);
             Configuration configuration = new Configuration(environment);

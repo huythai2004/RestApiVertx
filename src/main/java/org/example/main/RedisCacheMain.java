@@ -9,40 +9,48 @@ import io.vertx.redis.client.RedisOptions;
 import org.example.api.CategoriesApi;
 import org.example.api.PackagesApi;
 import org.example.api.StickersApi;
+import org.example.config.AppConfig;
 import org.example.service.cache.RedisCacheService;
 
 public class RedisCacheMain extends AbstractVerticle {
-    private static final int PORT = 8080;
-
+    //private static final int HTTP_PORT = 8888;
+    String host = AppConfig.get("redis.host");
+    int port = AppConfig.getInt("redis.port");
     @Override
     public void start(Promise<Void> startPromise) {
-        // Create Redis client
         RedisOptions redisOptions = new RedisOptions()
-                .setConnectionString("redis://localhost:6379");
+                .setConnectionString("Connecting to Redis at: redis://" + host + ":" + port);
+
         Redis redis = Redis.createClient(vertx, redisOptions);
 
-        // Create Redis cache service
         RedisCacheService cacheService = new RedisCacheService(redis);
 
-        // Create router
         Router router = Router.router(vertx);
         router.route().handler(BodyHandler.create());
 
-        // Register API endpoints
+        new CategoriesApi(cacheService);
+        new PackagesApi(cacheService);
+        new StickersApi(cacheService);
+
         CategoriesApi categoriesApi = new CategoriesApi(cacheService);
         PackagesApi packagesApi = new PackagesApi(cacheService);
         StickersApi stickersApi = new StickersApi(cacheService);
 
-        // Create HTTP server
+        categoriesApi.registerRoutersCategories(router);
+        packagesApi.registerRouterPackages(router);
+        stickersApi.registerRouterStickers(router);
+
         vertx.createHttpServer()
                 .requestHandler(router)
-                .listen(PORT, http -> {
+                .listen(port, http -> {
                     if (http.succeeded()) {
                         startPromise.complete();
-                        System.out.println("Redis Cache Server started on port " + PORT);
+                        System.out.println("Redis Cache Server started on memCachePort " + port);
                     } else {
                         startPromise.fail(http.cause());
+                        System.err.println("Failed to start HTTP server: " + http.cause());
                     }
                 });
     }
+
 }

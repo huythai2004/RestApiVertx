@@ -1,7 +1,9 @@
 package org.example.api;
 
 import io.vertx.core.Future;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.example.database.model.Categories;
 import org.example.service.CategoriesService;
@@ -96,5 +98,39 @@ public class CategoriesApi {
                     .put("status", 500);
                 return Future.failedFuture(error.encode());
             });
+    }
+
+    public void registerRoutersCategories(Router router) {
+        router.get("/categories").handler(ctx -> getAllCategories()
+                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json")
+                        .end(Json.encode(result)))
+        .onFailure(err -> ctx.response().setStatusCode(500)
+                .end(err.getMessage())));
+
+        router.get("categories/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            getCategoryById(id)
+                    .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json")
+                            .end(Json.encode(result))
+                            .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage())));
+        });
+
+        router.post("/categories").handler(ctx -> createCategory(ctx)
+                .onSuccess(v -> ctx.response().setStatusCode(201).end())
+                .onFailure(err -> ctx.response().setStatusCode(400).end(err.getMessage())));
+
+        router.put("/categories/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            updateCategory(id, ctx)
+                    .onSuccess(result -> ctx.response().setStatusCode(201).end())
+                    .onFailure(err -> ctx.response().setStatusCode(400).end(err.getMessage()));
+        });
+
+        router.delete("/categories/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            deleteCategory(id)
+                    .onSuccess(v -> ctx.response().setStatusCode(204).end())
+                    .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage()));
+        });
     }
 }

@@ -37,8 +37,6 @@
         Where id = #{id}
     </update>
     <delete id="deleteSticker" parameterType="int">
-        Delete
-        from stickers
-        where id = #{id}
+        Delete from stickers where id = #{id}
     </delete>
 </mapper>

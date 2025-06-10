@@ -1,7 +1,9 @@
 package org.example.api;
 
 import io.vertx.core.Future;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.example.database.model.Packages;
 import org.example.service.PackagesService;
@@ -14,7 +16,7 @@ import java.util.List;
 @Path("/packages")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class    PackagesApi {
+public class PackagesApi {
     private final PackagesService packagesService;
 
     public PackagesApi(CacheService cacheService) {
@@ -96,5 +98,36 @@ public class    PackagesApi {
                     .put("status", 500);
                 return Future.failedFuture(error.encode());
             });
+    }
+
+    public void registerRouterPackages (Router router) {
+        router.get("/packages").handler(ctx -> getAllPackages()
+                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json").end(Json.encode(result)))
+                .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage())));
+
+        router.get("/pacakges/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            getPackageById(id)
+                    .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json").end(Json.encode(result))
+                            .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage())));
+        });
+
+        router.post("/packages").handler(ctx -> createPackage(ctx)
+                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json").setStatusCode(201).end(Json.encode(result)))
+        .onFailure(err -> ctx.response().setStatusCode(400).end(err.getMessage())));
+
+        router.put("/packages/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            updatePackage(id, ctx)
+                .onSuccess(result -> ctx.response().setStatusCode(200).end(Json.encode(result)))
+                .onFailure(err -> ctx.response().setStatusCode(400).end(err.getMessage()));
+        });
+
+        router.delete("/packages/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            deletePackage(id)
+                .onSuccess(result -> ctx.response().setStatusCode(204).end())
+                .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage()));
+        });
     }
 }

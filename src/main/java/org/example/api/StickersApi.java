@@ -1,12 +1,13 @@
 package org.example.api;
 
 import io.vertx.core.Future;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import org.example.database.model.Stickers;
 import org.example.service.StickersService;
 import org.example.service.cache.CacheService;
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
@@ -96,5 +97,29 @@ public class StickersApi {
                     .put("status", 500);
                 return Future.failedFuture(error.encode());
             });
+    }
+
+    public void registerRouterStickers(Router router) {
+        router.get("/stickers").handler(ctx -> getAllStickers()
+                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json").end(Json.encode(result)))
+                .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage())));
+
+        router.get("/stickers/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            getStickerById(id)
+                    .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json").end(Json.encode(result))
+                            .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage())));
+        });
+
+        router.post("/stickers").handler(ctx -> createSticker(ctx)
+                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json").setStatusCode(201).end(Json.encode(result)))
+        .onFailure(err -> ctx.response().setStatusCode(400).end(err.getMessage())));
+
+        router.delete("/stickers/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            deleteSticker(id)
+                .onSuccess(result -> ctx.response().setStatusCode(204).end())
+                .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage()));
+        });
     }
 }

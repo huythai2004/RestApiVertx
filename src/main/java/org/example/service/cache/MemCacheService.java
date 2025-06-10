@@ -3,16 +3,12 @@ package org.example.service.cache;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import net.spy.memcached.MemcachedClient;
 import org.example.database.model.Categories;
 import org.example.database.model.Packages;
 import org.example.database.model.Stickers;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MemCacheService implements CacheService {
     private final MemcachedClient memcachedClient;
@@ -114,7 +110,7 @@ public class MemCacheService implements CacheService {
         Promise<List<Packages>> promise = Promise.promise();
         try {
             Object value = memcachedClient.get(PACKAGES_KEY + "all");
-            if(value != null) {
+            if (value != null) {
                 promise.complete((List<Packages>) value);
                 return promise.future();
             }
@@ -130,7 +126,7 @@ public class MemCacheService implements CacheService {
         Promise<Packages> promise = Promise.promise();
         try {
             Object value = memcachedClient.get(PACKAGES_KEY + id);
-            if(value == null) {
+            if (value == null) {
                 promise.complete(null);
                 return promise.future();
             }
@@ -148,7 +144,7 @@ public class MemCacheService implements CacheService {
             for (Packages pack : packages) {
                 memcachedClient.set(PACKAGES_KEY + pack.getId(), EXPIRATION_TIME, Json.encode(pack));
             }
-             memcachedClient.set(PACKAGES_KEY + "all", EXPIRATION_TIME, Json.encode(packages));
+            memcachedClient.set(PACKAGES_KEY + "all", EXPIRATION_TIME, Json.encode(packages));
             promise.complete();
         } catch (Exception e) {
             promise.fail(e);
@@ -162,7 +158,7 @@ public class MemCacheService implements CacheService {
         try {
             memcachedClient.set(PACKAGES_KEY + packages.getId(), EXPIRATION_TIME, Json.encode(packages));
             Object value = memcachedClient.get(PACKAGES_KEY + packages.getId());
-            if(value != null) {
+            if (value != null) {
                 List<Packages> packagesList = Json.decodeValue(value.toString(), List.class);
                 packagesList.removeIf(p -> p.getId() == packages.getId());
                 packagesList.add(packages);
@@ -198,7 +194,7 @@ public class MemCacheService implements CacheService {
         Promise<List<Stickers>> promise = Promise.promise();
         try {
             Object value = memcachedClient.get(STICKERS_KEY + "all");
-            if(value != null) {
+            if (value != null) {
                 promise.complete((List<Stickers>) value);
                 return promise.future();
             }

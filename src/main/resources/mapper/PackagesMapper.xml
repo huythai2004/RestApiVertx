@@ -48,8 +48,6 @@
         Where id = #{id}
     </update>
     <delete id="deletePackage" parameterType="int">
-        Delete
-        from packages
-        where id = #{id}
+        Delete from packages where id = #{id}
     </delete>
 </mapper>

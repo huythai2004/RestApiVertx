@@ -10,8 +10,7 @@ import org.example.main.RedisCacheMain;
 public class Main {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
-        Router router = Router.router(vertx);
-        vertx.deployVerticle(new MemCacheMain());
         vertx.deployVerticle(new RedisCacheMain());
+        vertx.deployVerticle(new MemCacheMain());
     }
 }
