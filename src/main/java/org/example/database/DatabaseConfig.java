@@ -11,11 +11,4 @@ public class DatabaseConfig {
     public static final String USERNAME = "root";
     public static final String PASSWORD = "Huythai-27112004";
 
-    public static SqlSessionFactory getSqlSessionFactory() {
-        getSqlSessionFactory().getConfiguration().addMapper(CategoriesMapper.class);
-        getSqlSessionFactory().getConfiguration().addMapper(PackagesMapper.class);
-        getSqlSessionFactory().getConfiguration().addMapper(StickersMapper.class);
-        return getSqlSessionFactory();
-    }
-
 }
