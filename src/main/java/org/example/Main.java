@@ -10,7 +10,22 @@ import org.example.main.RedisCacheMain;
 public class Main {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle(new RedisCacheMain());
-        vertx.deployVerticle(new MemCacheMain());
+        System.out.println("Deploying RedisCacheMain...");
+        vertx.deployVerticle(new RedisCacheMain(), res -> {
+            if (res.succeeded()) {
+                System.out.println("RedisCacheMain deployed successfully!");
+            } else {
+                System.err.println("Failed to deploy RedisCacheMain: " + res.cause().getMessage());
+            }
+        });
+
+        System.out.println("Deploying MemCacheMain...");
+        vertx.deployVerticle(new MemCacheMain(), res -> {
+            if (res.succeeded()) {
+                System.out.println("MemCacheMain deployed successfully!");
+            } else {
+                System.err.println("Failed to deploy MemCacheMain: " + res.cause().getMessage());
+            }
+        });
     }
 }

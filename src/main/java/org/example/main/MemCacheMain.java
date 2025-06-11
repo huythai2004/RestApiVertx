@@ -45,12 +45,12 @@ public class MemCacheMain extends AbstractVerticle {
             // Create HTTP server
             vertx.createHttpServer()
                     .requestHandler(router)
-                    .listen(port, http -> {
-                        if (http.succeeded()) {
+                    .listen(port, ar -> {
+                        if (ar.succeeded()) {
                             startPromise.complete();
-                            System.out.println("Memcached Cache Server started on memCachePort " + port);
+                            System.out.println("Memcached Cache Server started on port " + port);
                         } else {
-                            startPromise.fail(http.cause());
+                            startPromise.fail(ar.cause());
                         }
                     });
 
@@ -58,6 +58,18 @@ public class MemCacheMain extends AbstractVerticle {
             System.err.println("Failed to connect Memcached client: " + e.getMessage());
             e.printStackTrace();
             startPromise.fail(e);
+        }
+    }
+    @Override
+    public void stop(Promise<Void> stopPromise)  {
+        try {
+            // Close Memcached client if needed
+            // Assuming you have a reference to the MemcachedClient, close it here
+            // memcachedClient.shutdown();
+            stopPromise.complete();
+        } catch (Exception e) {
+            System.err.println("Failed to stop Memcached client: " + e.getMessage());
+            stopPromise.fail(e);
         }
     }
 }

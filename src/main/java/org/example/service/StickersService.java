@@ -82,7 +82,7 @@ public class StickersService {
 
         // Delete from database
         stickersMapper.deleteSticker(id);
-        
+
         // Delete from cache
         return cacheService.deleteSticker(id);
     }
