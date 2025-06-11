@@ -27,7 +27,7 @@
         Select * from packages where id = #{id}
     </select>
     <insert id="insertPackage" parameterType="org.example.database.model.Packages">
-        Insert into packages (name, creatorName, stickerCount, adWhatsApp, adTelegram, viewCount, categoryIds, isDisplayed, createdDate, locale, order, isPremium, isAnimated)
+        Insert into packages (name, creatorName, stickerCount, adWhatsApp, adTelegram, viewCount, categoryIds, isDisplayed, createdDate, locale, `order`, isPremium, isAnimated)
         Values (#{name}, #{creatorName}, #{stickerCount}, #{adWhatsApp}, #{adTelegram}, #{viewCount}, #{categoryIds}, #{isDisplayed}, #{createdDate}, #{locale}, #{order}, #{isPremium}, #{isAnimated})
     </insert>
     <update id="updatePackage" parameterType="org.example.database.model.Packages">
@@ -42,7 +42,7 @@
             isDisplayed   = #{isDisplayed},
             createdDate   = #{createdDate},
             locale        = #{locale},
-            order         = #{order},
+            `order`         = #{order},
             isPremium     = #{isPremium},
             isAnimated    = #{isAnimated}
         Where id = #{id}

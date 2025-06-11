@@ -21,7 +21,7 @@
         Select * from stickers where id = #{id}
     </select>
     <insert id="insertSticker" parameterType="org.example.database.model.Stickers">
-        Insert into stickers (url, packageId, locale, order, viewCount, createdDate, emojis, isPremium)
+        Insert into stickers (url, packageId, locale, `order`, viewCount, createdDate, emojis, isPremium)
         Values (#{url}, #{packageId}, #{locale}, #{order}, #{viewCount}, #{createdDate}, #{emojis}, #{isPremium})
     </insert>
     <update id="updateSticker" parameterType="org.example.database.model.Stickers">
@@ -29,7 +29,7 @@
         Set url         = #{url},
             packageId   = #{packageId},
             locale      = #{locale},
-            order       = #{order},
+            `order`       = #{order},
             viewCount   = #{viewCount},
             createdDate = #{createdDate},
             emojis      = #{emojis},
