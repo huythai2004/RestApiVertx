@@ -5,6 +5,7 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.handler.BodyHandler;
 import org.example.database.model.Categories;
 import org.example.service.CategoriesService;
 import org.example.service.cache.CacheService;
@@ -18,9 +19,57 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 public class CategoriesApi {
     private final CategoriesService categoriesService;
+    private final Router router;
 
     public CategoriesApi(CacheService cacheService) {
         this.categoriesService = new CategoriesService(cacheService);
+        this.router = Router.router(cacheService.getVertx());
+        setupRoutes();
+    }
+
+    private void setupRoutes() {
+        router.route().handler(BodyHandler.create());
+
+        // Get all categories
+        router.get("/categories").handler(ctx -> getAllCategories()
+                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json")
+                        .end(Json.encode(result)))
+                .onFailure(err -> ctx.response().setStatusCode(500)
+                        .end("Error: " + err.getMessage())));
+
+        // Get category by ID
+        router.get("/categories/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            getCategoryById(id)
+                    .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json")
+                            .end(Json.encode(result)))
+                    .onFailure(err -> ctx.response().setStatusCode(500)
+                            .end("Error: " + err.getMessage()));
+        });
+
+        // Create new category
+        router.post("/categories").handler(ctx -> createCategory(ctx)
+                .onSuccess(v -> ctx.response().setStatusCode(201).end())
+                .onFailure(err -> ctx.response().setStatusCode(500)
+                        .end("Error: " + err.getMessage())));
+
+        // Update category
+        router.put("/categories/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            updateCategory(id, ctx)
+                    .onSuccess(result -> ctx.response().setStatusCode(201).end())
+                    .onFailure(err -> ctx.response().setStatusCode(500)
+                            .end("Error: " + err.getMessage()));
+        });
+
+        // Delete category
+        router.delete("/categories/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            deleteCategory(id)
+                    .onSuccess(v -> ctx.response().setStatusCode(204).end())
+                    .onFailure(err -> ctx.response().setStatusCode(500)
+                            .end("Error: " + err.getMessage()));
+        });
     }
 
     @GET
@@ -100,37 +149,7 @@ public class CategoriesApi {
             });
     }
 
-    public void registerRoutersCategories(Router router) {
-        router.get("/categories").handler(ctx -> getAllCategories()
-                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json")
-                        .end(Json.encode(result)))
-        .onFailure(err -> ctx.response().setStatusCode(500)
-                .end(err.getMessage())));
-
-        router.get("categories/:id").handler(ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            getCategoryById(id)
-                    .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json")
-                            .end(Json.encode(result))
-                            .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage())));
-        });
-
-        router.post("/categories").handler(ctx -> createCategory(ctx)
-                .onSuccess(v -> ctx.response().setStatusCode(201).end())
-                .onFailure(err -> ctx.response().setStatusCode(400).end(err.getMessage())));
-
-        router.put("/categories/:id").handler(ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            updateCategory(id, ctx)
-                    .onSuccess(result -> ctx.response().setStatusCode(201).end())
-                    .onFailure(err -> ctx.response().setStatusCode(400).end(err.getMessage()));
-        });
-
-        router.delete("/categories/:id").handler(ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            deleteCategory(id)
-                    .onSuccess(v -> ctx.response().setStatusCode(204).end())
-                    .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage()));
-        });
+    public Router getRouter() {
+        return router;
     }
 }

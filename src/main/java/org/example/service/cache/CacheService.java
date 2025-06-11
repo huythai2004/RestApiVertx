@@ -1,6 +1,7 @@
 package org.example.service.cache;
 
 import io.vertx.core.Future;
+import io.vertx.core.Vertx;
 import org.example.database.model.Categories;
 import org.example.database.model.Packages;
 import org.example.database.model.Stickers;
@@ -8,6 +9,7 @@ import org.example.database.model.Stickers;
 import java.util.List;
 
 public interface CacheService {
+    Vertx getVertx();
 
     //Categories
     Future<List<Categories>> getAllCategories();

@@ -2,6 +2,7 @@ package org.example.service.cache;
 
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.redis.client.Redis;
 import io.vertx.redis.client.RedisAPI;
@@ -18,14 +19,16 @@ import java.util.concurrent.TimeUnit;
 
 public class RedisCacheService implements CacheService {
     private final Redis redis;
+    private final Vertx vertx;
     private RedisAPI redisAPI;
     private static final String CATEGORIES_KEY = "categories:";
     private static final String PACKAGES_KEY = "packages:";
     private static final String STICKERS_KEY = "stickers:";
     private static final int EXPIRATION_TIME = 3600; // 1 hour in seconds
 
-    public RedisCacheService(Redis redis) {
+    public RedisCacheService(Redis redis, Vertx vertx) {
         this.redis = redis;
+        this.vertx = vertx;
         connect();
     }
 
@@ -50,6 +53,11 @@ public class RedisCacheService implements CacheService {
         connect();
         promise.complete(redisAPI);
         return promise.future();
+    }
+
+    @Override
+    public Vertx getVertx() {
+        return vertx;
     }
 
     // Categories methods

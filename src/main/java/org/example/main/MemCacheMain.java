@@ -15,19 +15,23 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class MemCacheMain extends AbstractVerticle {
-    //private static final int PORT = 8888;
     String host = AppConfig.get("memcached.host");
-    int port = AppConfig.getInt("memcached.port");
+    int memcachedPort = AppConfig.getInt("memcached.port");
+    int httpPort = AppConfig.getInt("server.port") + 1; // Use server.port + 1 for HTTP
 
     @Override
     public void start(Promise<Void> startPromise) {
         try {
+            System.out.println("Memcached host: " + host);
+            System.out.println("Memcached port: " + memcachedPort);
+            System.out.println("HTTP port: " + httpPort);
+
             // Create Memcached client
             MemcachedClient memcachedClient = new MemcachedClient(
-                    new InetSocketAddress(host, port));
+                    new InetSocketAddress(host, memcachedPort));
 
             // Create Memcached cache service
-            MemCacheService cacheService = new MemCacheService(memcachedClient);
+            MemCacheService cacheService = new MemCacheService(memcachedClient, vertx);
 
             // Create router
             Router router = Router.router(vertx);
@@ -38,17 +42,18 @@ public class MemCacheMain extends AbstractVerticle {
             PackagesApi packagesApi = new PackagesApi(cacheService);
             StickersApi stickersApi = new StickersApi(cacheService);
 
-            categoriesApi.registerRoutersCategories(router);
-            packagesApi.registerRouterPackages(router);
-            stickersApi.registerRouterStickers(router);
+            // Mount API routers
+            router.mountSubRouter("/", categoriesApi.getRouter());
+            router.mountSubRouter("/", packagesApi.getRouter());
+            router.mountSubRouter("/", stickersApi.getRouter());
 
             // Create HTTP server
             vertx.createHttpServer()
                     .requestHandler(router)
-                    .listen(port, ar -> {
+                    .listen(httpPort, ar -> {
                         if (ar.succeeded()) {
                             startPromise.complete();
-                            System.out.println("Memcached Cache Server started on port " + port);
+                            System.out.println("Memcached Cache Server started on port " + httpPort);
                         } else {
                             startPromise.fail(ar.cause());
                         }

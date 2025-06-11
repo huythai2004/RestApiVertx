@@ -2,6 +2,7 @@ package org.example.service.cache;
 
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import net.spy.memcached.MemcachedClient;
 import org.example.database.model.Categories;
@@ -12,13 +13,20 @@ import java.util.List;
 
 public class MemCacheService implements CacheService {
     private final MemcachedClient memcachedClient;
+    private final Vertx vertx;
     private static final String CATEGORIES_KEY = "categories:";
     private static final String PACKAGES_KEY = "packages:";
     private static final String STICKERS_KEY = "stickers:";
     private static final int EXPIRATION_TIME = 3600; // 1 hour
 
-    public MemCacheService(MemcachedClient memcachedClient) {
+    public MemCacheService(MemcachedClient memcachedClient, Vertx vertx) {
         this.memcachedClient = memcachedClient;
+        this.vertx = vertx;
+    }
+
+    @Override
+    public Vertx getVertx() {
+        return vertx;
     }
 
     @Override
