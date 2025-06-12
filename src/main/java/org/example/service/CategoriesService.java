@@ -11,10 +11,12 @@ import java.util.List;
 public class CategoriesService {
     private final CacheService cacheService;
     private final CategoriesMapper categoriesMapper;
+    private final org.apache.ibatis.session.SqlSession sqlSession;
 
     public CategoriesService(CacheService cacheService) {
         this.cacheService = cacheService;
-        this.categoriesMapper = MyBatisUltil.getSqlSessionFactory().openSession().getMapper(CategoriesMapper.class);
+        this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
+        this.categoriesMapper = sqlSession.getMapper(CategoriesMapper.class);
     }
 
     public Future<List<Categories>> getAllCategories() {
@@ -65,24 +67,42 @@ public class CategoriesService {
             return Future.failedFuture("Category URL is required");
         }
 
-        // Save to database first
-        categoriesMapper.insertCategories(category);
+        try {
+            // Save to database first
+            categoriesMapper.insertCategories(category);
+            sqlSession.commit(); // Commit the transaction
 
-        // Then update cache
-        return cacheService.setCategories(category);
+            // Then update cache
+            return cacheService.setCategories(category);
+        } catch (Exception e) {
+            sqlSession.rollback(); // Rollback on error
+            return Future.failedFuture("Failed to save category: " + e.getMessage());
+        }
     }
 
     public Future<Void> deleteCategory(int id) {
-        // Check if category exists
-        Categories category = categoriesMapper.getCategoriesById(id);
-        if (category == null) {
-            return Future.failedFuture("Category not found with id: " + id);
-        }
+        try {
+            // Check if category exists
+            Categories category = categoriesMapper.getCategoriesById(id);
+            if (category == null) {
+                return Future.failedFuture("Category not found with id: " + id);
+            }
 
-        // Delete from database
-        categoriesMapper.deleteCategories(id);
-        
-        // Delete from cache
-        return cacheService.deleteCategories(id);
+            // Delete from database
+            categoriesMapper.deleteCategories(id);
+            sqlSession.commit(); // Commit the transaction
+            
+            // Delete from cache
+            return cacheService.deleteCategories(id);
+        } catch (Exception e) {
+            sqlSession.rollback(); // Rollback on error
+            return Future.failedFuture("Failed to delete category: " + e.getMessage());
+        }
+    }
+
+    public void close() {
+        if (sqlSession != null) {
+            sqlSession.close();
+        }
     }
 }

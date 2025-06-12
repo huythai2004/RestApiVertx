@@ -17,7 +17,7 @@ import java.net.InetSocketAddress;
 public class MemCacheMain extends AbstractVerticle {
     String host = AppConfig.get("memcached.host");
     int memcachedPort = AppConfig.getInt("memcached.port");
-    int httpPort = AppConfig.getInt("server.port") + 1; // Use server.port + 1 for HTTP
+    int httpPort = AppConfig.getInt("server2.port"); // Use server.port + 1 for HTTP
 
     @Override
     public void start(Promise<Void> startPromise) {
@@ -69,8 +69,6 @@ public class MemCacheMain extends AbstractVerticle {
     public void stop(Promise<Void> stopPromise)  {
         try {
             // Close Memcached client if needed
-            // Assuming you have a reference to the MemcachedClient, close it here
-            // memcachedClient.shutdown();
             stopPromise.complete();
         } catch (Exception e) {
             System.err.println("Failed to stop Memcached client: " + e.getMessage());

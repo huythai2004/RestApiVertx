@@ -32,8 +32,9 @@ public class PackagesApi {
 
         // Get all packages
         router.get("/packages").handler(ctx -> getAllPackages()
-                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json").end(Json.encode(result)))
-                .onFailure(err -> ctx.response().setStatusCode(500).end(err.getMessage())));
+                .onSuccess(result -> ctx.response().putHeader("Content-Type", "application/json")
+                        .end(Json.encode(result)))
+                .onFailure(err -> ctx.response().setStatusCode(500).end("Error: " + err.getMessage())));
 
         // Get package by ID
         router.get("/packages/:id").handler(ctx -> {

@@ -49,7 +49,7 @@ public class CategoriesApi {
 
         // Create new category
         router.post("/categories").handler(ctx -> createCategory(ctx)
-                .onSuccess(v -> ctx.response().setStatusCode(201).end())
+                .onSuccess(v -> ctx.response().setStatusCode(201).end("Category data is created"))
                 .onFailure(err -> ctx.response().setStatusCode(500)
                         .end("Error: " + err.getMessage())));
 
@@ -57,7 +57,7 @@ public class CategoriesApi {
         router.put("/categories/:id").handler(ctx -> {
             int id = Integer.parseInt(ctx.pathParam("id"));
             updateCategory(id, ctx)
-                    .onSuccess(result -> ctx.response().setStatusCode(201).end())
+                    .onSuccess(result -> ctx.response().setStatusCode(201).end("Category updated"))
                     .onFailure(err -> ctx.response().setStatusCode(500)
                             .end("Error: " + err.getMessage()));
         });
@@ -66,7 +66,7 @@ public class CategoriesApi {
         router.delete("/categories/:id").handler(ctx -> {
             int id = Integer.parseInt(ctx.pathParam("id"));
             deleteCategory(id)
-                    .onSuccess(v -> ctx.response().setStatusCode(204).end())
+                    .onSuccess(v -> ctx.response().setStatusCode(204).end("Category deleted"))
                     .onFailure(err -> ctx.response().setStatusCode(500)
                             .end("Error: " + err.getMessage()));
         });
@@ -90,7 +90,7 @@ public class CategoriesApi {
         return categoriesService.getCategoryById(id)
             .recover(err -> {
                 JsonObject error = new JsonObject()
-                    .put("error", err.getMessage())
+                    .put("Error: ", err.getMessage())
                     .put("status", 500);
                 return Future.failedFuture(error.encode());
             });
@@ -110,7 +110,7 @@ public class CategoriesApi {
                 });
         } catch (Exception e) {
             JsonObject error = new JsonObject()
-                .put("error", e.getMessage())
+                .put("Error: ", e.getMessage())
                 .put("status", 400);
             return Future.failedFuture(error.encode());
         }
@@ -125,13 +125,13 @@ public class CategoriesApi {
             return categoriesService.setCategory(category)
                 .recover(err -> {
                     JsonObject error = new JsonObject()
-                        .put("error", err.getMessage())
+                        .put("Error: ", err.getMessage())
                         .put("status", 500);
                     return Future.failedFuture(error.encode());
                 });
         } catch (Exception e) {
             JsonObject error = new JsonObject()
-                .put("error", e.getMessage())
+                .put("Error: ", e.getMessage())
                 .put("status", 400);
             return Future.failedFuture(error.encode());
         }
@@ -143,7 +143,7 @@ public class CategoriesApi {
         return categoriesService.deleteCategory(id)
             .recover(err -> {
                 JsonObject error = new JsonObject()
-                    .put("error", err.getMessage())
+                    .put("Error: ", err.getMessage())
                     .put("status", 500);
                 return Future.failedFuture(error.encode());
             });

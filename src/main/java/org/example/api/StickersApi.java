@@ -11,7 +11,6 @@ import org.example.service.cache.CacheService;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import io.vertx.core.Vertx;
 import io.vertx.ext.web.handler.BodyHandler;
 
 @Path("/stickers")
