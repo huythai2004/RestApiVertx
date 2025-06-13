@@ -34,18 +34,11 @@ public class MemCacheService implements CacheService {
     public Future<List<Categories>> getAllCategories() {
         Promise<List<Categories>> promise = Promise.promise();
         try {
-            Object value = memcachedClient.get(CATEGORIES_KEY + "all");
-            if (value != null) {
-                // Convert JSON string to JsonArray and map to Categories list
-                io.vertx.core.json.JsonArray jsonArray = new io.vertx.core.json.JsonArray(value.toString());
-                List<Categories> categories = new ArrayList<>();
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    categories.add(jsonArray.getJsonObject(i).mapTo(Categories.class));
-                }
-                promise.complete(categories);
-            } else {
-                promise.complete(new ArrayList<>());
-            }
+            // First, clear any invalid cache
+            memcachedClient.delete(CATEGORIES_KEY + "all");
+            
+            // Get from database through service
+            return Future.succeededFuture(new ArrayList<>());
         } catch (Exception e) {
             promise.fail(e);
         }
@@ -72,9 +65,15 @@ public class MemCacheService implements CacheService {
     public Future<Void> setAllCategories(List<Categories> categories) {
         Promise<Void> promise = Promise.promise();
         try {
+            // Clear existing cache first
+            memcachedClient.delete(CATEGORIES_KEY + "all");
+            
+            // Store individual categories
             for (Categories category : categories) {
                 memcachedClient.set(CATEGORIES_KEY + category.getId(), EXPIRATION_TIME, Json.encode(category));
             }
+            
+            // Store the list as a new array
             memcachedClient.set(CATEGORIES_KEY + "all", EXPIRATION_TIME, Json.encode(categories));
             promise.complete();
         } catch (Exception e) {
@@ -92,21 +91,26 @@ public class MemCacheService implements CacheService {
             
             // Update the all categories list
             Object allCategories = memcachedClient.get(CATEGORIES_KEY + "all");
-            List<Categories> categories;
+            List<Categories> categoriesList;
             if (allCategories != null) {
-                io.vertx.core.json.JsonArray jsonArray = new io.vertx.core.json.JsonArray(allCategories.toString());
-                categories = new ArrayList<>();
-                for (int i = 0; i < jsonArray.size(); i++) {
-                    categories.add(jsonArray.getJsonObject(i).mapTo(Categories.class));
+                try {
+                    io.vertx.core.json.JsonArray jsonArray = new io.vertx.core.json.JsonArray(allCategories.toString());
+                    categoriesList = new ArrayList<>();
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        categoriesList.add(jsonArray.getJsonObject(i).mapTo(Categories.class));
+                    }
+                    categoriesList.removeIf(c -> c.getId() == category.getId());
+                    categoriesList.add(category);
+                } catch (Exception e) {
+                    // If error parsing existing cache, start fresh
+                    categoriesList = new ArrayList<>();
+                    categoriesList.add(category);
                 }
-                categories.removeIf(c -> c.getId() == category.getId());
-                categories.add(category);
             } else {
-                categories = new ArrayList<>();
-                categories.add(category);
+                categoriesList = new ArrayList<>();
+                categoriesList.add(category);
             }
-            memcachedClient.set(CATEGORIES_KEY + "all", EXPIRATION_TIME, Json.encode(categories));
-            
+            memcachedClient.set(CATEGORIES_KEY + "all", EXPIRATION_TIME, Json.encode(categoriesList));
             promise.complete();
         } catch (Exception e) {
             promise.fail(e);
@@ -120,7 +124,7 @@ public class MemCacheService implements CacheService {
         try {
             // Delete the single category
             memcachedClient.delete(CATEGORIES_KEY + id);
-            
+
             // Update the all categories list
             Object allCategories = memcachedClient.get(CATEGORIES_KEY + "all");
             if (allCategories != null) {
@@ -300,12 +304,12 @@ public class MemCacheService implements CacheService {
             memcachedClient.delete(STICKERS_KEY + id);
             Object value = memcachedClient.get(STICKERS_KEY + "all");
             if (value != null) {
-              io.vertx.core.json.JsonArray jsonArray = new io.vertx.core.json.JsonArray(getAllStickers().toString());
-              List<Stickers> stickersList = new ArrayList<>();
-              for (int i = 0; i < jsonArray.size(); i++) {
-                  stickersList.add(jsonArray.getJsonObject(i).mapTo(Stickers.class));
-              }
-              stickersList.removeIf(s -> s.getId() == id);
+                io.vertx.core.json.JsonArray jsonArray = new io.vertx.core.json.JsonArray(getAllStickers().toString());
+                List<Stickers> stickersList = new ArrayList<>();
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    stickersList.add(jsonArray.getJsonObject(i).mapTo(Stickers.class));
+                }
+                stickersList.removeIf(s -> s.getId() == id);
                 memcachedClient.set(STICKERS_KEY + "all", EXPIRATION_TIME, Json.encode(stickersList));
             }
             promise.complete();

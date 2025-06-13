@@ -68,8 +68,15 @@ public class CategoriesService {
         }
 
         try {
-            // Save to database first
-            categoriesMapper.insertCategories(category);
+            // Check if category exists
+            Categories existingCategory = categoriesMapper.getCategoriesById(category.getId());
+            if (existingCategory != null) {
+                // Update existing category
+                categoriesMapper.updateCategories(category);
+            } else {
+                // Insert new category
+                categoriesMapper.insertCategories(category);
+            }
             sqlSession.commit(); // Commit the transaction
 
             // Then update cache

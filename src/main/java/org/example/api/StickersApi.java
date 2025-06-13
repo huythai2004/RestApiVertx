@@ -8,9 +8,11 @@ import io.vertx.ext.web.RoutingContext;
 import org.example.database.model.Stickers;
 import org.example.service.StickersService;
 import org.example.service.cache.CacheService;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+
 import io.vertx.ext.web.handler.BodyHandler;
 
 @Path("/stickers")
@@ -24,6 +26,68 @@ public class StickersApi {
         this.stickersService = new StickersService(cacheService);
         this.router = Router.router(cacheService.getVertx());
         setupRoutes();
+    }
+
+    private void setupRoutes() {
+        router.route().handler(BodyHandler.create());
+
+        // Get all stickers
+        router.get("/stickers").handler(ctx -> getAllStickers()
+                .onSuccess(result -> ctx.response()
+                        .putHeader("content-type", "application/json")
+                        .end(Json.encode(result)))
+                .onFailure(err -> ctx.response()
+                        .setStatusCode(500)
+                        .end("Error: " + err.getMessage())));
+
+        // Get sticker by ID
+        router.get("/stickers/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            getStickerById(id)
+                    .onSuccess(result -> ctx.response()
+                            .putHeader("content-type", "application/json")
+                            .end(Json.encode(result)))
+                    .onFailure(err -> ctx.response()
+                            .setStatusCode(500)
+                            .end("Error: " + err.getMessage()));
+        });
+
+        // Create new sticker
+        router.post("/stickers").handler(ctx -> createSticker(ctx)
+                .onSuccess(v -> ctx.response()
+                        .setStatusCode(201)
+                        .end())
+                .onFailure(err -> ctx.response()
+                        .setStatusCode(500)
+                        .end("Error: " + err.getMessage())));
+
+        // Update sticker
+        router.put("/stickers/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            updateSticker(id, ctx)
+                    .onSuccess(v -> ctx.response()
+                            .setStatusCode(200)
+                            .end())
+                    .onFailure(err -> ctx.response()
+                            .setStatusCode(500)
+                            .end("Error: " + err.getMessage()));
+        });
+
+        // Delete sticker
+        router.delete("/stickers/:id").handler(ctx -> {
+            int id = Integer.parseInt(ctx.pathParam("id"));
+            deleteSticker(id)
+                    .onSuccess(v -> ctx.response()
+                            .setStatusCode(204)
+                            .end())
+                    .onFailure(err -> ctx.response()
+                            .setStatusCode(500)
+                            .end("Error: " + err.getMessage()));
+        });
+    }
+
+    public Router getRouter() {
+        return router;
     }
 
     @GET
@@ -103,65 +167,5 @@ public class StickersApi {
                 });
     }
 
-    private void setupRoutes() {
-        router.route().handler(BodyHandler.create());
 
-        // Get all stickers
-        router.get("/stickers").handler(ctx -> getAllStickers()
-                .onSuccess(result -> ctx.response()
-                        .putHeader("content-type", "application/json")
-                        .end(Json.encode(result)))
-                .onFailure(err -> ctx.response()
-                        .setStatusCode(500)
-                        .end("Error: " + err.getMessage())));
-
-        // Get sticker by ID
-        router.get("/stickers/:id").handler(ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            getStickerById(id)
-                    .onSuccess(result -> ctx.response()
-                            .putHeader("content-type", "application/json")
-                            .end(Json.encode(result)))
-                    .onFailure(err -> ctx.response()
-                            .setStatusCode(500)
-                            .end("Error: " + err.getMessage()));
-        });
-
-        // Create new sticker
-        router.post("/stickers").handler(ctx -> createSticker(ctx)
-                .onSuccess(v -> ctx.response()
-                        .setStatusCode(201)
-                        .end())
-                .onFailure(err -> ctx.response()
-                        .setStatusCode(500)
-                        .end("Error: " + err.getMessage())));
-
-        // Update sticker
-        router.put("/stickers/:id").handler(ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            updateSticker(id, ctx)
-                    .onSuccess(v -> ctx.response()
-                            .setStatusCode(200)
-                            .end())
-                    .onFailure(err -> ctx.response()
-                            .setStatusCode(500)
-                            .end("Error: " + err.getMessage()));
-        });
-
-        // Delete sticker
-        router.delete("/stickers/:id").handler(ctx -> {
-            int id = Integer.parseInt(ctx.pathParam("id"));
-            deleteSticker(id)
-                    .onSuccess(v -> ctx.response()
-                            .setStatusCode(204)
-                            .end())
-                    .onFailure(err -> ctx.response()
-                            .setStatusCode(500)
-                            .end("Error: " + err.getMessage()));
-        });
-    }
-
-    public Router getRouter() {
-        return router;
-    }
 }

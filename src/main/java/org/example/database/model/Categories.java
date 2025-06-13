@@ -1,5 +1,6 @@
 package org.example.database.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
 public class Categories implements Serializable {
@@ -8,7 +9,10 @@ public class Categories implements Serializable {
     private String url;
     private String locale;
     private int order;
+    
+    @JsonProperty("isDisplayed")
     private boolean isDisplayed;
+    
     private int packageCount;
     private String createdDate;
 
@@ -70,10 +74,12 @@ public class Categories implements Serializable {
         this.order = order;
     }
 
+    @JsonProperty("isDisplayed")
     public boolean isDisplayed() {
         return isDisplayed;
     }
 
+    @JsonProperty("isDisplayed")
     public void setDisplayed(boolean displayed) {
         isDisplayed = displayed;
     }

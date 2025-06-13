@@ -7,8 +7,8 @@ public class Packages implements Serializable {
     private String name;
     private String creatorName;
     private int stickerCount;
-    private String adWhatsApp;
-    private String adTelegram;
+    private String addWhatsApp;
+    private String addTelegram;
     private int viewCount;
     private String categoryIds;
     private boolean isDisplayed;
@@ -30,8 +30,8 @@ public class Packages implements Serializable {
         this.name = name;
         this.creatorName = creatorName;
         this.stickerCount = stickerCount;
-        this.adWhatsApp = adWhatsApp;
-        this.adTelegram = adTelegram;
+        this.addWhatsApp = adWhatsApp;
+        this.addTelegram = adTelegram;
         this.viewCount = viewCount;
         this.categoryIds = categoryIds;
         this.isDisplayed = isDisplayed;
@@ -76,19 +76,19 @@ public class Packages implements Serializable {
     }
 
     public String getAdWhatsApp() {
-        return adWhatsApp;
+        return addWhatsApp;
     }
 
     public void setAdWhatsApp(String adWhatsApp) {
-        this.adWhatsApp = adWhatsApp;
+        this.addWhatsApp = adWhatsApp;
     }
 
     public String getAdTelegram() {
-        return adTelegram;
+        return addTelegram;
     }
 
     public void setAdTelegram(String adTelegram) {
-        this.adTelegram = adTelegram;
+        this.addTelegram = adTelegram;
     }
 
     public int getViewCount() {
@@ -162,8 +162,8 @@ public class Packages implements Serializable {
                 ", name='" + name + '\'' +
                 ", creatorName='" + creatorName + '\'' +
                 ", stickerCount=" + stickerCount +
-                ", adWhatsApp='" + adWhatsApp + '\'' +
-                ", adTelegram='" + adTelegram + '\'' +
+                ", adWhatsApp='" + addWhatsApp + '\'' +
+                ", adTelegram='" + addTelegram + '\'' +
                 ", viewCount=" + viewCount +
                 ", categoryIds='" + categoryIds + '\'' +
                 ", isDisplayed=" + isDisplayed +

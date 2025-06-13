@@ -12,7 +12,7 @@ public interface PackagesMapper {
             @Result(property = "name", column = "name"),
             @Result(property = "creatorName", column = "creatorName"),
             @Result(property = "stickerCount", column = "stickerCount"),
-            @Result(property = "addWhatsapp", column = "addWhatsapp"),
+            @Result(property = "addWhatsApp", column = "addWhatsapp"),
             @Result(property = "addTelegram", column = "addTelegram"),
             @Result(property = "viewCount", column = "viewCount"),
             @Result(property = "categoryIds", column = "categoryIds"),
@@ -31,7 +31,7 @@ public interface PackagesMapper {
             @Result(property = "name", column = "name"),
             @Result(property = "creatorName", column = "creatorName"),
             @Result(property = "stickerCount", column = "stickerCount"),
-            @Result(property = "addWhatsapp", column = "addWhatsapp"),
+            @Result(property = "addWhatsApp", column = "addWhatsapp"),
             @Result(property = "addTelegram", column = "addTelegram"),
             @Result(property = "viewCount", column = "viewCount"),
             @Result(property = "categoryIds", column = "categoryIds"),
@@ -46,13 +46,16 @@ public interface PackagesMapper {
 
     @Insert("INSERT INTO Packages (name, creatorName, stickerCount, addWhatsapp, addTelegram, viewCount, categoryIds, " +
             "isDisplayed, createdDate, locale, `order`, isPremium, isAnimated) " +
-            "VALUES (#{name}, #{creatorName}, #{stickerCount}, #{addWhatsapp}, #{addTelegram}, #{viewCount}, " +
+            "VALUES (#{name}, #{creatorName}, #{stickerCount}, #{addWhatsApp}, #{addTelegram}, #{viewCount}, " +
             "#{categoryIds}, #{isDisplayed}, #{createdDate}, #{locale}, #{order}, #{isPremium}, #{isAnimated})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertPackage(Packages packages);
 
-    @Update("UPDATE Packages SET name=#{name}, creatorName=#{creatorName}, stickerCount=#{stickerCount}, addWhatsapp=#{addWhatsapp}, "
-            + "addTelegram=#{addTelegram}, viewCount=#{viewCount}, categoryIds=#{categoryIds}, isDisplayed=#{isDisplayed}, ")
+    @Update("UPDATE Packages SET name=#{name}, creatorName=#{creatorName}, stickerCount=#{stickerCount}, " +
+            "addWhatsapp=#{addWhatsApp}, addTelegram=#{addTelegram}, viewCount=#{viewCount}, " +
+            "categoryIds=#{categoryIds}, isDisplayed=#{isDisplayed}, createdDate=#{createdDate}, " +
+            "locale=#{locale}, `order`=#{order}, isPremium=#{isPremium}, isAnimated=#{isAnimated} " +
+            "WHERE id=#{id}")
     void updatePackage(Packages packages);
 
     @Delete("DELETE FROM Packages WHERE id=#{id}")
