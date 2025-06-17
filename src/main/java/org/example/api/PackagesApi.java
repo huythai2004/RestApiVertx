@@ -198,7 +198,7 @@ public class PackagesApi {
                                 if (body.containsKey("createdDate")) {
                                     Object createdDateObj = body.getValue("createdDate");
                                     if (createdDateObj instanceof Number) {
-                                        existingPackage.setCreatedDate(Long.valueOf(((Number) createdDateObj).longValue()));
+                                        existingPackage.setCreatedDate(((Number) createdDateObj).longValue());
                                     } else if (createdDateObj instanceof String) {
                                         existingPackage.setCreatedDate((Long) createdDateObj);
                                     }
@@ -353,7 +353,7 @@ public class PackagesApi {
                     if (updates.containsKey("isDisplayed"))
                         existingPackage.setIsDisplayed(updates.getBoolean("isDisplayed"));
                     if (updates.containsKey("createdDate"))
-                        existingPackage.setCreatedDate(Long.valueOf(updates.getLong(("createdDate"))));
+                        existingPackage.setCreatedDate(updates.getLong(("createdDate")));
                     if (updates.containsKey("locale")) existingPackage.setLocale(updates.getString("locale"));
                     if (updates.containsKey("order")) existingPackage.setOrder(updates.getInteger("order"));
                     if (updates.containsKey("isPremium")) existingPackage.setIsPremium(updates.getBoolean("isPremium"));

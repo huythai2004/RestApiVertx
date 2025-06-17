@@ -176,7 +176,7 @@ public class StickersApi {
                                 if (body.containsKey("createdDate")) {
                                     Object createdDateObj = body.getValue("createdDate");
                                     if (createdDateObj instanceof Number) {
-                                        existingSticker.setCreatedDate(Long.valueOf(((Number) createdDateObj).longValue()));
+                                        existingSticker.setCreatedDate(((Number) createdDateObj).longValue());
                                     } else if (createdDateObj instanceof String) {
                                         existingSticker.setCreatedDate((Long) createdDateObj);
                                     }
@@ -325,7 +325,7 @@ public class StickersApi {
                     if (updates.containsKey("viewCount"))
                         existingSticker.setViewCount(updates.getInteger("viewCount"));
                     if (updates.containsKey("createdDate"))
-                        existingSticker.setCreatedDate(Long.valueOf(updates.getLong("createdDate")));
+                        existingSticker.setCreatedDate(updates.getLong("createdDate"));
                     if( updates.containsKey("emojis"))
                         existingSticker.setEmojis(updates.getString("emojis"));
                     if (updates.containsKey("isPremium"))

@@ -196,7 +196,7 @@ public class CategoriesApi {
                                 if (body.containsKey("createdDate")) {
                                     Object createdDateObj = body.getValue("createdDate");
                                     if (createdDateObj instanceof Number) {
-                                        existingCategory.setCreatedDate(Long.valueOf(((Number) createdDateObj).longValue()));
+                                        existingCategory.setCreatedDate(((Number) createdDateObj).longValue());
                                     } else if (createdDateObj instanceof String) {
                                         existingCategory.setCreatedDate((Long) createdDateObj);
                                     }
@@ -326,7 +326,7 @@ public class CategoriesApi {
                     if (updates.containsKey("packageCount"))
                         existingCategory.setPackageCount(updates.getInteger("packageCount"));
                     if (updates.containsKey("createdDate"))
-                        existingCategory.setCreatedDate(Long.valueOf(updates.getLong("createdDate")));
+                        existingCategory.setCreatedDate(updates.getLong("createdDate"));
                     if (updates.containsKey("isDisplayed"))
                         existingCategory.setDisplayed(updates.getBoolean("isDisplayed"));
 
