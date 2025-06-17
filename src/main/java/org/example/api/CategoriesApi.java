@@ -4,7 +4,6 @@ import io.vertx.core.Future;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import org.example.database.model.Categories;
 import org.example.service.CategoriesService;
@@ -80,7 +79,7 @@ public class CategoriesApi {
                     });
         });
 
-        // POST new category
+        // Create new category
         router.post("/categories").handler(ctx -> {
             try {
                 JsonObject body = ctx.getBodyAsJson();
@@ -197,9 +196,9 @@ public class CategoriesApi {
                                 if (body.containsKey("createdDate")) {
                                     Object createdDateObj = body.getValue("createdDate");
                                     if (createdDateObj instanceof Number) {
-                                        existingCategory.setCreatedDate(String.valueOf(((Number) createdDateObj).longValue()));
+                                        existingCategory.setCreatedDate(Long.valueOf(((Number) createdDateObj).longValue()));
                                     } else if (createdDateObj instanceof String) {
-                                        existingCategory.setCreatedDate((String) createdDateObj);
+                                        existingCategory.setCreatedDate((Long) createdDateObj);
                                     }
                                 }
                                 if (body.containsKey("isDisplayed")) {
@@ -327,7 +326,7 @@ public class CategoriesApi {
                     if (updates.containsKey("packageCount"))
                         existingCategory.setPackageCount(updates.getInteger("packageCount"));
                     if (updates.containsKey("createdDate"))
-                        existingCategory.setCreatedDate(String.valueOf(updates.getLong("createdDate")));
+                        existingCategory.setCreatedDate(Long.valueOf(updates.getLong("createdDate")));
                     if (updates.containsKey("isDisplayed"))
                         existingCategory.setDisplayed(updates.getBoolean("isDisplayed"));
 

@@ -1,5 +1,7 @@
 package org.example.database.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class Packages implements Serializable {
@@ -11,11 +13,14 @@ public class Packages implements Serializable {
     private String addTelegram;
     private int viewCount;
     private String categoryIds;
-    private boolean isDisplayed;
-    private String createdDate;
+    private Long createdDate;
     private String locale;
     private int order;
+    @JsonProperty("isDisplayed")
+    private boolean isDisplayed;
+    @JsonProperty("isPremium")
     private boolean isPremium;
+    @JsonProperty("isAnimated")
     private boolean isAnimated;
 
     // Default constructor
@@ -23,15 +28,15 @@ public class Packages implements Serializable {
     }
 
     // Constructor with fields
-    public Packages(int id, String name, String creatorName, int stickerCount, String adWhatsApp,
-                   String adTelegram, int viewCount, String categoryIds, boolean isDisplayed,
-                   String createdDate, String locale, int order, boolean isPremium, boolean isAnimated) {
+    public Packages(int id, String name, String creatorName, int stickerCount, String addWhatsApp,
+                    String addTelegram, int viewCount, String categoryIds, boolean isDisplayed,
+                    Long createdDate, String locale, int order, boolean isPremium, boolean isAnimated) {
         this.id = id;
         this.name = name;
         this.creatorName = creatorName;
         this.stickerCount = stickerCount;
-        this.addWhatsApp = adWhatsApp;
-        this.addTelegram = adTelegram;
+        this.addWhatsApp = addWhatsApp;
+        this.addTelegram = addTelegram;
         this.viewCount = viewCount;
         this.categoryIds = categoryIds;
         this.isDisplayed = isDisplayed;
@@ -75,19 +80,19 @@ public class Packages implements Serializable {
         this.stickerCount = stickerCount;
     }
 
-    public String getAdWhatsApp() {
+    public String getAddWhatsApp() {
         return addWhatsApp;
     }
 
-    public void setAdWhatsApp(String adWhatsApp) {
+    public void setAddWhatsApp(String adWhatsApp) {
         this.addWhatsApp = adWhatsApp;
     }
 
-    public String getAdTelegram() {
+    public String getAddTelegram() {
         return addTelegram;
     }
 
-    public void setAdTelegram(String adTelegram) {
+    public void setAddTelegram(String adTelegram) {
         this.addTelegram = adTelegram;
     }
 
@@ -107,19 +112,19 @@ public class Packages implements Serializable {
         this.categoryIds = categoryIds;
     }
 
-    public boolean isDisplayed() {
+    public boolean getIsDisplayed() {
         return isDisplayed;
     }
 
-    public void setDisplayed(boolean displayed) {
+    public void setIsDisplayed(boolean displayed) {
         isDisplayed = displayed;
     }
 
-    public String getCreatedDate() {
+    public Long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(String createdDate) {
+    public void setCreatedDate(Long createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -139,19 +144,19 @@ public class Packages implements Serializable {
         this.order = order;
     }
 
-    public boolean isPremium() {
+    public boolean getIsPremium() {
         return isPremium;
     }
 
-    public void setPremium(boolean premium) {
+    public void setIsPremium(boolean premium) {
         isPremium = premium;
     }
 
-    public boolean isAnimated() {
+    public boolean getIsAnimated() {
         return isAnimated;
     }
 
-    public void setAnimated(boolean animated) {
+    public void setIsAnimated(boolean animated) {
         isAnimated = animated;
     }
 
@@ -162,15 +167,15 @@ public class Packages implements Serializable {
                 ", name='" + name + '\'' +
                 ", creatorName='" + creatorName + '\'' +
                 ", stickerCount=" + stickerCount +
-                ", adWhatsApp='" + addWhatsApp + '\'' +
-                ", adTelegram='" + addTelegram + '\'' +
+                ", addWhatsApp='" + addWhatsApp + '\'' +
+                ", addTelegram='" + addTelegram + '\'' +
                 ", viewCount=" + viewCount +
                 ", categoryIds='" + categoryIds + '\'' +
                 ", isDisplayed=" + isDisplayed +
                 ", createdDate='" + createdDate + '\'' +
                 ", locale='" + locale + '\'' +
                 ", order=" + order +
-                ", isPremium=" + isPremium +
+                ",isPremium=" + isPremium +
                 ", isAnimated=" + isAnimated +
                 '}';
     }

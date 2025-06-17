@@ -3,6 +3,7 @@ package org.example.service;
 import io.vertx.core.Future;
 import org.example.config.MyBatisUltil;
 import org.example.database.mapper.StickersMapper;
+import org.example.database.model.Categories;
 import org.example.database.model.Stickers;
 import org.example.service.cache.CacheService;
 
@@ -12,10 +13,12 @@ import java.util.List;
 public class StickersService {
     private final StickersMapper stickersMapper;
     private final CacheService cacheService;
+    private final org.apache.ibatis.session.SqlSession sqlSession;
 
     public StickersService(CacheService cacheService) {
         this.stickersMapper = MyBatisUltil.getSqlSessionFactory().openSession().getMapper(StickersMapper.class);
         this.cacheService = cacheService;
+        this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
     }
 
     public Future<List<Stickers>> getAllStickers() {
@@ -41,10 +44,10 @@ public class StickersService {
                         return Future.succeededFuture(cached);
                     }
                     // If not in cache, get from database
-                    Stickers sticker = stickersMapper.getStickerById(id);
-                    if (sticker != null) {
-                        return cacheService.setSticker(sticker)
-                                .map(v -> sticker);
+                    Stickers stickers = stickersMapper.getStickerById(id);
+                    if (stickers != null) {
+                        return cacheService.setSticker(stickers)
+                                .map(v -> stickers);
                     }
                     return Future.succeededFuture(null);
                 });
@@ -65,25 +68,48 @@ public class StickersService {
         if (sticker.getLocale() == null || sticker.getLocale().trim().isEmpty()) {
             return Future.failedFuture("Locale is required");
         }
+        if (sticker.getViewCount() < 0) {
+            return Future.failedFuture("View count cannot be negative");
+        }
 
-        // Save to database first
-        stickersMapper.insertSticker(sticker);
+        try {
+            // Check if category exists
+            Stickers existingSticker = stickersMapper.getStickerById(sticker.getId());
+            if (existingSticker != null) {
+                // Update existing category
+                stickersMapper.updateSticker(sticker);
+            } else {
+                // Insert new category
+                stickersMapper.insertSticker(sticker);
+            }
+            sqlSession.commit(); // Commit the transaction
 
-        // Then update cache
-        return cacheService.setSticker(sticker);
+            // Then update cache
+            return cacheService.setSticker(sticker);
+        } catch (Exception e) {
+            sqlSession.rollback(); // Rollback on error
+            return Future.failedFuture("Failed to save stickers: " + e.getMessage());
+        }
     }
 
     public Future<Void> deleteSticker(int id) {
         // Check if sticker exists
-        Stickers sticker = stickersMapper.getStickerById(id);
-        if (sticker == null) {
-            return Future.failedFuture("Sticker not found with id: " + id);
+        try {
+            // Check if category exists
+            Stickers stickers = stickersMapper.getStickerById(id);
+            if (stickers == null) {
+                return Future.failedFuture("Stickers not found with id: " + id);
+            }
+
+            // Delete from database
+            stickersMapper.deleteSticker(id);
+            sqlSession.commit(); // Commit the transaction
+
+            // Delete from cache
+            return cacheService.deleteSticker(id);
+        } catch (Exception e) {
+            sqlSession.rollback(); // Rollback on error
+            return Future.failedFuture("Failed to delete stickers: " + e.getMessage());
         }
-
-        // Delete from database
-        stickersMapper.deleteSticker(id);
-
-        // Delete from cache
-        return cacheService.deleteSticker(id);
     }
 }

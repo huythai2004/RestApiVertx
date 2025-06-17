@@ -9,12 +9,11 @@ public class Categories implements Serializable {
     private String url;
     private String locale;
     private int order;
-    
+
     @JsonProperty("isDisplayed")
     private boolean isDisplayed;
-    
     private int packageCount;
-    private String createdDate;
+    private Long createdDate;
 
     // Default constructor
     public Categories() {
@@ -22,7 +21,7 @@ public class Categories implements Serializable {
 
     // Constructor with fields
     public Categories(int id, String name, String url, String locale, int order, 
-                     boolean isDisplayed, int packageCount, String createdDate) {
+                     boolean isDisplayed, int packageCount, Long createdDate) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -92,11 +91,11 @@ public class Categories implements Serializable {
         this.packageCount = packageCount;
     }
 
-    public String getCreatedDate() {
+    public Long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(String createdDate) {
+    public void setCreatedDate(Long createdDate) {
         this.createdDate = createdDate;
     }
 

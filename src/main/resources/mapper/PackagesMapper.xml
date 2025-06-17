@@ -32,19 +32,19 @@
     </insert>
     <update id="updatePackage" parameterType="org.example.database.model.Packages">
         Update packages
-        Set name          = #{name},
-            creatorName   = #{creatorName},
-            stickerCount  = #{stickerCount},
-            addWhatsApp    = #{addWhatsApp},
-            addTelegram    = #{addTelegram},
-            viewCount     = #{viewCount},
-            categoryIds   = #{categoryIds},
-            isDisplayed   = #{isDisplayed},
-            createdDate   = #{createdDate},
-            locale        = #{locale},
-            `order`         = #{order},
-            isPremium     = #{isPremium},
-            isAnimated    = #{isAnimated}
+        Set name = #{name},
+            creatorName = #{creatorName},
+            stickerCount = #{stickerCount},
+            addWhatsApp = #{addWhatsApp},
+            addTelegram = #{addTelegram},
+            viewCount = #{viewCount},
+            categoryIds = #{categoryIds},
+            isDisplayed = #{isDisplayed},
+            createdDate = #{createdDate},
+            locale = #{locale},
+            `order` = #{order},
+            isPremium = #{isPremium},
+            isAnimated = #{isAnimated}
         Where id = #{id}
     </update>
     <delete id="deletePackage" parameterType="int">

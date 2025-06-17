@@ -32,12 +32,12 @@ public interface StickersMapper {
     })
     Stickers getStickerById(int id);
 
-    @Insert("INSERT INTO stickers (url, packageId, order, viewCount, createdDate, emojis, isPremium)" +
+    @Insert("INSERT INTO stickers (url, packageId, `order`, viewCount, createdDate, emojis, isPremium)" +
             " VALUES (#{url}, #{packageId}, #{order}, #{viewCount}, #{createdDate}, #{emojis}, #{isPremium})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertSticker(Stickers sticker);
 
-    @Update("UPDATE stickers SET url=#{url}, packageId=#{packageId}, order=#{order}, viewCount=#{viewCount}, " +
+    @Update("UPDATE stickers SET url=#{url}, packageId=#{packageId}, `order`=#{order}, viewCount=#{viewCount}, " +
             "createdDate=#{createdDate}, emojis=#{emojis}, isPremium=#{isPremium} WHERE id=#{id}")
     void updateSticker(Stickers sticker);
 

@@ -39,7 +39,7 @@ public class MyBatisUltil {
                 System.out.println("Building SqlSessionFactory...");
                 sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream, properties);
                 
-                System.out.println("MyBatis SQL Session Factory initialized successfully.");
+            System.out.println("MyBatis SQL Session Factory initialized successfully.");
             }
         } catch (Exception e) {
             System.err.println("Error initializing MyBatis SQL Session Factory:");

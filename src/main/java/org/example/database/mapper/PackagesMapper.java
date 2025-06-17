@@ -44,20 +44,20 @@ public interface PackagesMapper {
     })
     Packages getPackageById(int id);
 
-    @Insert("INSERT INTO Packages (name, creatorName, stickerCount, addWhatsapp, addTelegram, viewCount, categoryIds, " +
+    @Insert("INSERT INTO packages (name, creatorName, stickerCount, addWhatsapp, addTelegram, viewCount, categoryIds, " +
             "isDisplayed, createdDate, locale, `order`, isPremium, isAnimated) " +
             "VALUES (#{name}, #{creatorName}, #{stickerCount}, #{addWhatsApp}, #{addTelegram}, #{viewCount}, " +
             "#{categoryIds}, #{isDisplayed}, #{createdDate}, #{locale}, #{order}, #{isPremium}, #{isAnimated})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void insertPackage(Packages packages);
 
-    @Update("UPDATE Packages SET name=#{name}, creatorName=#{creatorName}, stickerCount=#{stickerCount}, " +
+    @Update("UPDATE packages SET name=#{name}, creatorName=#{creatorName}, stickerCount=#{stickerCount}, " +
             "addWhatsapp=#{addWhatsApp}, addTelegram=#{addTelegram}, viewCount=#{viewCount}, " +
             "categoryIds=#{categoryIds}, isDisplayed=#{isDisplayed}, createdDate=#{createdDate}, " +
             "locale=#{locale}, `order`=#{order}, isPremium=#{isPremium}, isAnimated=#{isAnimated} " +
             "WHERE id=#{id}")
     void updatePackage(Packages packages);
 
-    @Delete("DELETE FROM Packages WHERE id=#{id}")
-    void deletePackages( int id);
+    @Delete("DELETE FROM packages WHERE id=#{id}")
+    void deletePackages(int id);
 }

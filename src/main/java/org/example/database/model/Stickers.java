@@ -9,7 +9,7 @@ public class Stickers implements Serializable {
     private String locale;
     private int order;
     private int viewCount;
-    private String createdDate;
+    private Long createdDate;
     private String emojis;
     private boolean isPremium;
 
@@ -19,7 +19,7 @@ public class Stickers implements Serializable {
 
     // Constructor with fields
     public Stickers(int id, String url, int packageId, String locale, int order,
-                   int viewCount, String createdDate, String emojis, boolean isPremium) {
+                   int viewCount, Long createdDate, String emojis, boolean isPremium) {
         this.id = id;
         this.url = url;
         this.packageId = packageId;
@@ -80,11 +80,11 @@ public class Stickers implements Serializable {
         this.viewCount = viewCount;
     }
 
-    public String getCreatedDate() {
+    public Long getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(String createdDate) {
+    public void setCreatedDate(Long createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -115,7 +115,7 @@ public class Stickers implements Serializable {
                 ", viewCount=" + viewCount +
                 ", createdDate='" + createdDate + '\'' +
                 ", emojis='" + emojis + '\'' +
-                ", isPremium=" + isPremium +
+                ", getIsPremium=" + isPremium +
                 '}';
     }
 } 
