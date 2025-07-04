@@ -4,11 +4,7 @@ import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
-import io.vertx.redis.client.Redis;
-import io.vertx.redis.client.RedisAPI;
-import io.vertx.redis.client.RedisConnection;
-import io.vertx.redis.client.Command;
-import io.vertx.redis.client.Response;
+import io.vertx.redis.client.*;
 import org.example.database.model.Categories;
 import org.example.database.model.Packages;
 import org.example.database.model.Stickers;
@@ -21,6 +17,7 @@ public class RedisCacheService implements CacheService {
     private final Redis redis;
     private final Vertx vertx;
     private RedisAPI redisAPI;
+
     private static final String CATEGORIES_KEY = "categories:";
     private static final String PACKAGES_KEY = "packages:";
     private static final String STICKERS_KEY = "stickers:";
@@ -30,6 +27,11 @@ public class RedisCacheService implements CacheService {
         this.redis = redis;
         this.vertx = vertx;
         connect();
+    }
+
+    @Override
+    public Vertx getVertx() {
+        return vertx;
     }
 
     private void connect() {
@@ -50,70 +52,70 @@ public class RedisCacheService implements CacheService {
             return Future.succeededFuture(redisAPI);
         }
         Promise<RedisAPI> promise = Promise.promise();
-        connect();
-        promise.complete(redisAPI);
+        redis.connect()
+                .onSuccess(conn -> {
+                    redisAPI = RedisAPI.api(conn);
+                    promise.complete(redisAPI);
+                })
+                .onFailure(err -> {
+                    System.err.println("Failed to connect to Redis: " + err.getMessage());
+                    promise.fail(err);
+                });
         return promise.future();
     }
 
-    @Override
-    public Vertx getVertx() {
-        return vertx;
-    }
-
     // Categories methods
-    public Future<Response> loadFromDatabaseAndCache(List<Categories> categories) {
-        categories.sort(Comparator.comparing(Categories::getName));
-        return redisAPI.send(Command.SET, "categories:all", Json.encode(categories));
-
-    }
+//    public Future<Response> loadFromDatabaseAndCache(List<Categories> categories) {
+//        categories.sort(Comparator.comparing(Categories::getName));
+//        return redisAPI.send(Command.SET, "categories:all", Json.encode(categories));
+//
+//    }
 
     @Override
-      public Future<List<Categories>> getAllCategories() {
-            return getRedisAPI()
-                    .compose(api -> {
-                        Promise<List<Categories>> promise = Promise.promise();
-                        api.send(Command.KEYS, CATEGORIES_KEY + "*")
-                                .onSuccess(keys -> {
-                                    if (keys.size() == 0) {
-                                        promise.complete(new ArrayList<>());
-                                        return;
-                                    }
-                                    List<String> keyList = new ArrayList<>();
-                                    for (int i = 0; i < keys.size(); i++) {
-                                        keyList.add(keys.get(i).toString());
-                                    }
-                                    api.send(Command.MGET, keyList.toArray(new String[0]))
-                                            .onSuccess(values -> {
-                                                List<Categories> categories = new ArrayList<>();
-                                                for (int i = 0; i < values.size(); i++) {
-                                                    String value = values.get(i).toString();
-                                                    if (value != null && !value.equals("null")) {
-                                                        try {
-                                                            categories.add(Json.decodeValue(value, Categories.class));
-                                                        } catch (Exception e) {
-                                                            System.err.println("Error decoding category: " + e.getMessage());
-                                                        }
+    public Future<List<Categories>> getAllCategories() {
+        return getRedisAPI()
+                .compose(api -> {
+                    Promise<List<Categories>> promise = Promise.promise();
+                    api.send(Command.KEYS, CATEGORIES_KEY + "*")
+                            .onSuccess(keys -> {
+                                if (keys.size() == 0) {
+                                    promise.complete(new ArrayList<>());
+                                    return;
+                                }
+                                List<String> keyList = new ArrayList<>();
+                                for (int i = 0; i < keys.size(); i++) {
+                                    keyList.add(keys.get(i).toString());
+                                }
+                                api.send(Command.MGET, keyList.toArray(new String[0]))
+                                        .onSuccess(values -> {
+                                            List<Categories> categories = new ArrayList<>();
+                                            for (int i = 0; i < values.size(); i++) {
+                                                String value = values.get(i).toString();
+                                                if (value != null && !value.equals("null")) {
+                                                    try {
+                                                        categories.add(Json.decodeValue(value, Categories.class));
+                                                    } catch (Exception e) {
+                                                        System.err.println("Error decoding category: " + e.getMessage());
                                                     }
                                                 }
+                                            }
+                                            // Sắp xếp theo ID
+                                            categories.sort(Comparator.comparing(Categories::getId));
 
-                                                // Sắp xếp theo ID
-                                                categories.sort(Comparator.comparing(Categories::getId));
-
-                                                promise.complete(categories);
-                                            })
-                                            .onFailure(err -> {
-                                                System.err.println("Error getting categories from Redis: " + err.getMessage());
-                                                promise.fail(err);
-                                            });
-                                })
-                                .onFailure(err -> {
-                                    System.err.println("Error getting category keys from Redis: " + err.getMessage());
-                                    promise.fail(err);
-                                });
-                        return promise.future();
-                    });
-
-                    }
+                                            promise.complete(categories);
+                                        })
+                                        .onFailure(err -> {
+                                            System.err.println("Error getting categories from Redis: " + err.getMessage());
+                                            promise.fail(err);
+                                        });
+                            })
+                            .onFailure(err -> {
+                                System.err.println("Error getting category keys from Redis: " + err.getMessage());
+                                promise.fail(err);
+                            });
+                    return promise.future();
+                });
+    }
 
 
     @Override
@@ -214,11 +216,11 @@ public class RedisCacheService implements CacheService {
     public Future<List<Packages>> getAllPackages() {
         return getRedisAPI()
                 .compose(api -> {
-                    Promise<List<Packages>> promise = Promise.promise();
+                    Promise<List<Packages>> packages = Promise.promise();
                     api.send(Command.KEYS, PACKAGES_KEY + "*")
                             .onSuccess(keys -> {
                                 if (keys.size() == 0) {
-                                    promise.complete(new ArrayList<>());
+                                    packages.complete(new ArrayList<>());
                                     return;
                                 }
                                 List<String> keyList = new ArrayList<>();
@@ -227,31 +229,34 @@ public class RedisCacheService implements CacheService {
                                 }
                                 api.send(Command.MGET, keyList.toArray(new String[0]))
                                         .onSuccess(values -> {
-                                            List<Packages> packages = new ArrayList<>();
+                                            List<Packages> packagesList = new ArrayList<>();
                                             for (int i = 0; i < values.size(); i++) {
                                                 String value = values.get(i).toString();
                                                 if (value != null && !value.equals("null")) {
                                                     try {
-                                                        packages.add(Json.decodeValue(value, Packages.class));
+                                                        packagesList.add(Json.decodeValue(value, Packages.class));
                                                     } catch (Exception e) {
-                                                        System.err.println("Error decoding package: " + e.getMessage());
+                                                        System.err.println("Error decoding category: " + e.getMessage());
                                                     }
                                                 }
                                             }
-                                            packages.sort(Comparator.comparing(Packages::getId));
-                                            promise.complete(packages);
+                                            // Sắp xếp theo ID
+                                            packagesList.sort(Comparator.comparing(Packages::getId));
+
+                                            packages.complete(packagesList);
                                         })
                                         .onFailure(err -> {
-                                            System.err.println("Error getting packages from Redis: " + err.getMessage());
-                                            promise.fail(err);
+                                            System.err.println("Error getting categories from Redis: " + err.getMessage());
+                                            packages.fail(err);
                                         });
                             })
                             .onFailure(err -> {
-                                System.err.println("Error getting package keys from Redis: " + err.getMessage());
-                                promise.fail(err);
+                                System.err.println("Error getting packages keys from Redis: " + err.getMessage());
+                                packages.fail(err);
                             });
-                    return promise.future();
+                    return packages.future();
                 });
+
     }
 
     @Override

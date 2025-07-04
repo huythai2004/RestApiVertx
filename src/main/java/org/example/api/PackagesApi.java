@@ -6,6 +6,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import org.example.database.model.Packages;
+import org.example.search.PackageRediSearch;
 import org.example.service.PackagesService;
 import org.example.service.cache.CacheService;
 
@@ -21,7 +22,7 @@ public class PackagesApi {
     private final Router router;
 
     public PackagesApi(CacheService cacheService) {
-        this.packagesService = new PackagesService(cacheService);
+        this.packagesService = new PackagesService(cacheService, new PackageRediSearch());
         this.router = Router.router(cacheService.getVertx());
         setupRoutes();
     }
@@ -30,22 +31,23 @@ public class PackagesApi {
         router.route().handler(BodyHandler.create());
 
         // Get all packages
-        router.get("/packages").handler(ctx ->
-                getAllPackages()
-                        .onSuccess(packages -> {
-                            ctx.response()
-                                    .putHeader("content-type", "application/json")
-                                    .end(Json.encode(packages));
-                        })
-                        .onFailure(err -> {
-                            JsonObject error = new JsonObject()
-                                    .put("Error: ", err.getMessage())
-                                    .put("status", 500);
-                            ctx.response()
-                                    .setStatusCode(500)
-                                    .putHeader("content-type", "application/json")
-                                    .end(error.encode());
-                        }));
+        router.get("/packages").handler(ctx -> {
+            getAllPackages()
+                    .onSuccess(packages -> {
+                        ctx.response()
+                                .putHeader("content-type", "application/json")
+                                .end(Json.encode(packages));
+                    })
+                    .onFailure(err -> {
+                        JsonObject error = new JsonObject()
+                                .put("error", err.getMessage())
+                                .put("status", 500);
+                        ctx.response()
+                                .setStatusCode(500)
+                                .putHeader("content-type", "application/json")
+                                .end(error.encode());
+                    });
+        });
 
         // Get package by ID
         router.get("/packages/:id").handler(ctx -> {

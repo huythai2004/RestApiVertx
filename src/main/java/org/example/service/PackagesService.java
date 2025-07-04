@@ -4,6 +4,7 @@ import io.vertx.core.Future;
 import org.example.config.MyBatisUltil;
 import org.example.database.mapper.PackagesMapper;
 import org.example.database.model.Packages;
+import org.example.search.PackageRediSearch;
 import org.example.service.cache.CacheService;
 
 import java.util.Collections;
@@ -13,11 +14,12 @@ public class PackagesService {
     private final CacheService cacheService;
     private final PackagesMapper packagesMapper;
     private final org.apache.ibatis.session.SqlSession sqlSession;
-
-    public PackagesService(CacheService cacheService) {
+    private final PackageRediSearch packageRediSearch;
+    public PackagesService(CacheService cacheService, PackageRediSearch packageRediSearch) {
         this.cacheService = cacheService;
         this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
         this.packagesMapper = sqlSession.getMapper(PackagesMapper.class);
+        this.packageRediSearch = packageRediSearch;
     }
 
     public Future<List<Packages>> getAllPackages() {
@@ -37,6 +39,7 @@ public class PackagesService {
     }
 
     public Future<Packages> getPackageById(int id) {
+        //TODO: if complete PackageRediSearch, change cacheService -> PackageRediSearch
         return cacheService.getPackageById(id)
                 .compose(cached -> {
                     if (cached != null) {

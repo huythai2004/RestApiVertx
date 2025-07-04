@@ -50,6 +50,9 @@ public class CategoriesService {
                     return Future.succeededFuture(null);
                 });
     }
+//    public Categories getCategoryById(int id) {
+//        Categories cacheCategories =
+//    }
 
     public Future<Void> setCategory(Categories category) {
         if (category == null) {

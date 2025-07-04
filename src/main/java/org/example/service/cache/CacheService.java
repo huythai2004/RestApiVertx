@@ -5,14 +5,20 @@ import io.vertx.core.Vertx;
 import org.example.database.model.Categories;
 import org.example.database.model.Packages;
 import org.example.database.model.Stickers;
+import redis.clients.jedis.JedisPooled;
 
 import java.util.List;
 
 public interface CacheService {
     Vertx getVertx();
+    public static JedisPooled getRedisPooled(){
+        return CacheService.getRedisPooled();
+    }
+
 
     //Categories
     Future<List<Categories>> getAllCategories();
+
     Future<Categories> getCategoriesById(int id);
     Future<Void> setAllCategories(List<Categories> categories);
     Future<Void> setCategories(Categories category);

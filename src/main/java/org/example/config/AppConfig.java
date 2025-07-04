@@ -1,43 +1,4 @@
-//package org.example.config;
-//
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.util.Properties;
-//
-//public class AppConfig {
-//    private static final Properties props = new Properties();
-//    static {
-//        try (InputStream input = ClassLoader.getSystemResourceAsStream("application.properties")) {
-//            if (input == null) {
-//                System.out.println("Error: Unable to find application.properties file.");
-//            } else {
-//                props.load(input);
-//                System.out.println("Application properties loaded successfully.");
-//            }
-//        } catch (IOException ex) {
-//            ex.printStackTrace();
-//        }
-//    }
-//
-//    public static String get(String key) {
-//        return props.getProperty(key);
-//    }
-//
-//    public static int getInt(String key) {
-//        String value = props.getProperty(key);
-//        if(value == null) {
-//            System.out.println("Warning: Property " + key + "is not set in application.properties.");
-//            return 0;
-//        }
-//        try {
-//            return Integer.parseInt(value.trim());
-//        } catch (NumberFormatException e) {
-//            System.err.println("Error: Property " + key + " is not a valid integer: " + value);
-//            return 0;
-//        }
-//    }
-//}
-//
+
 
 package org.example.config;
 

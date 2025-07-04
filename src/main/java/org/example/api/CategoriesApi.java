@@ -19,7 +19,6 @@ import java.util.List;
 public class CategoriesApi {
     private final CategoriesService categoriesService;
     private final Router router;
-
     public CategoriesApi(CacheService cacheService) {
         this.categoriesService = new CategoriesService(cacheService);
         this.router = Router.router(cacheService.getVertx());
