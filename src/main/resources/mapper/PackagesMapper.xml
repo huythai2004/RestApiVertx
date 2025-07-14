@@ -26,6 +26,18 @@
     <select id="getPackageById" parameterType="int" resultMap="PackagesResultMap">
         Select * from packages where id = #{id}
     </select>
+
+    <select id="getPackageByName" parameterType="String" resultMap="PackagesResultMap">
+        select * from packages where name = #{name}
+    </select>
+
+    <select id="getPackagesByCreatorName" parameterType="String" resultMap="PackagesResultMap">
+        select * from packages where creatorName = #{creatorName}
+    </select>
+    <select id="getPackagesByViewCount" parameterType="int" resultMap="PackagesResultMap">
+        select * from packages where viewCount = #{viewCount}
+    </select>
+
     <insert id="insertPackage" parameterType="org.example.database.model.Packages">
         Insert into packages (name, creatorName, stickerCount, addWhatsApp, addTelegram, viewCount, categoryIds, isDisplayed, createdDate, locale, `order`, isPremium, isAnimated)
         Values (#{name}, #{creatorName}, #{stickerCount}, #{addWhatsApp}, #{addTelegram}, #{viewCount}, #{categoryIds}, #{isDisplayed}, #{createdDate}, #{locale}, #{order}, #{isPremium}, #{isAnimated})

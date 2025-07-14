@@ -28,8 +28,9 @@ public abstract class AbstractRedisSearch<T> {
 
             jedisPooled.ftCreate(indexName, IndexOptions.defaultOptions().setDefinition(indexDefinition), schema);
         } catch (Exception e) {
-            // Index might already exist
-            LOG.warning("Error creating index {}: {}" + indexName + ", "+ e.getMessage());
+            // Index might already exist or Redis search module not available
+            // This is not critical for the application to work
+            LOG.warning("Warning: Could not create Redis search index " + indexName + ": " + e.getMessage() + ". This is normal if Redis search module is not available or index already exists.");
         }
     }
 
@@ -38,7 +39,7 @@ public abstract class AbstractRedisSearch<T> {
             String key = getKeyPrefix() + ":" + id;
             jedisPooled.hset(key, RediSearchUtil.toStringMap(fields));
         } catch (Exception e) {
-            LOG.warning("Error creating index {}: {}" + indexName + ", "+ e.getMessage());
+            LOG.warning("Error creating index {}: {}" + indexName + ", " + e.getMessage());
         }
     }
 
@@ -51,7 +52,7 @@ public abstract class AbstractRedisSearch<T> {
             SearchResult result = jedisPooled.ftSearch(indexName, query);
             return buildData(result.getDocuments());
         } catch (Exception e) {
-            LOG.warning("Error searching index {}: {}" + indexName + ", "+ e.getMessage());
+            LOG.warning("Error searching index {}: {}" + indexName + ", " + e.getMessage());
             return new ArrayList<>();
         }
     }

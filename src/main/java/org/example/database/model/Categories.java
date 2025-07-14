@@ -73,12 +73,10 @@ public class Categories implements Serializable {
         this.order = order;
     }
 
-    @JsonProperty("isDisplayed")
-    public boolean isDisplayed() {
+    public boolean getIsDisplayed() {
         return isDisplayed;
     }
 
-    @JsonProperty("isDisplayed")
     public void setDisplayed(boolean displayed) {
         isDisplayed = displayed;
     }

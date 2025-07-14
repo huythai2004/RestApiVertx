@@ -4,7 +4,10 @@ import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
-import io.vertx.redis.client.*;
+import io.vertx.redis.client.Command;
+import io.vertx.redis.client.Redis;
+import io.vertx.redis.client.RedisAPI;
+import io.vertx.redis.client.RedisConnection;
 import org.example.database.model.Categories;
 import org.example.database.model.Packages;
 import org.example.database.model.Stickers;
@@ -63,13 +66,6 @@ public class RedisCacheService implements CacheService {
                 });
         return promise.future();
     }
-
-    // Categories methods
-//    public Future<Response> loadFromDatabaseAndCache(List<Categories> categories) {
-//        categories.sort(Comparator.comparing(Categories::getName));
-//        return redisAPI.send(Command.SET, "categories:all", Json.encode(categories));
-//
-//    }
 
     @Override
     public Future<List<Categories>> getAllCategories() {
@@ -285,6 +281,14 @@ public class RedisCacheService implements CacheService {
                 });
     }
 
+    //    @Override
+//    public List<Packages> getPackagesByName(String name) {
+//        return redisAPI()
+//                .compose(api -> {
+//                    Promise<Packages> promise = Promise.promise();
+//                    api.send
+//                })
+//    }
     @Override
     public Future<Void> setAllPackages(List<Packages> packages) {
         if (packages == null || packages.isEmpty()) {

@@ -1,7 +1,11 @@
 package org.example.database.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.io.Serializable;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Stickers implements Serializable {
     private int id;
     private String url;
@@ -11,6 +15,8 @@ public class Stickers implements Serializable {
     private int viewCount;
     private Long createdDate;
     private String emojis;
+    
+    @JsonProperty("isPremium")
     private boolean isPremium;
 
     // Default constructor
@@ -96,11 +102,11 @@ public class Stickers implements Serializable {
         this.emojis = emojis;
     }
 
-    public boolean isPremium() {
+    public boolean getIsPremium() {
         return isPremium;
     }
 
-    public void setPremium(boolean premium) {
+    public void setIsPremium(boolean premium) {
         isPremium = premium;
     }
 

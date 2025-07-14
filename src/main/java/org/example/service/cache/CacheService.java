@@ -11,7 +11,8 @@ import java.util.List;
 
 public interface CacheService {
     Vertx getVertx();
-    public static JedisPooled getRedisPooled(){
+
+    public static JedisPooled getRedisPooled() {
         return CacheService.getRedisPooled();
     }
 
@@ -20,21 +21,32 @@ public interface CacheService {
     Future<List<Categories>> getAllCategories();
 
     Future<Categories> getCategoriesById(int id);
+
     Future<Void> setAllCategories(List<Categories> categories);
+
     Future<Void> setCategories(Categories category);
+
     Future<Void> deleteCategories(int id);
 
     //Packages
     Future<List<Packages>> getAllPackages();
+
     Future<Packages> getPackageById(int id);
+
     Future<Void> setAllPackages(List<Packages> packages);
+
     Future<Void> setPackage(Packages packages);
+
     Future<Void> deletePackages(int id);
 
     //Stickers
     Future<List<Stickers>> getAllStickers();
+
     Future<Stickers> getStickerById(int id);
+
     Future<Void> setAllStickers(List<Stickers> stickers);
+
     Future<Void> setSticker(Stickers sticker);
+
     Future<Void> deleteSticker(int id);
 }

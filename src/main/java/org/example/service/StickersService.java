@@ -3,8 +3,8 @@ package org.example.service;
 import io.vertx.core.Future;
 import org.example.config.MyBatisUltil;
 import org.example.database.mapper.StickersMapper;
-import org.example.database.model.Categories;
 import org.example.database.model.Stickers;
+import org.example.search.StickerRediSearch;
 import org.example.service.cache.CacheService;
 
 import java.util.Collections;
@@ -14,11 +14,13 @@ public class StickersService {
     private final StickersMapper stickersMapper;
     private final CacheService cacheService;
     private final org.apache.ibatis.session.SqlSession sqlSession;
+    private final StickerRediSearch stickerRediSearch;
 
-    public StickersService(CacheService cacheService) {
-        this.stickersMapper = MyBatisUltil.getSqlSessionFactory().openSession().getMapper(StickersMapper.class);
+    public StickersService(CacheService cacheService, StickerRediSearch stickerRediSearch) {
         this.cacheService = cacheService;
         this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
+        this.stickersMapper = sqlSession.getMapper(StickersMapper.class);
+        this.stickerRediSearch = stickerRediSearch;
     }
 
     public Future<List<Stickers>> getAllStickers() {
@@ -51,6 +53,72 @@ public class StickersService {
                     }
                     return Future.succeededFuture(null);
                 });
+    }
+
+    public Future<List<Stickers>> searchStickers(String url, Integer packageId, String locale, Integer order, Integer viewCount, String emojis) {
+        List<Stickers> result = null;
+        String searchValue = null;
+
+        // Confirm value to find first
+         if (url != null && !url.isEmpty()) {
+            searchValue = url;
+        } else if (packageId != null && packageId > 0) {
+            searchValue = String.valueOf(packageId);
+        } else if (locale != null && !locale.isEmpty()) {
+            searchValue = locale;
+        } else if (order != null && order > 0) {
+            searchValue = String.valueOf(order);
+        } else if (viewCount != null && viewCount > 0) {
+             searchValue = String.valueOf(viewCount);
+        } else if (emojis != null && !emojis.isEmpty()) {
+            searchValue = emojis;
+        }
+
+        // Find in redis if has data
+        if (searchValue != null ) {
+            result = stickerRediSearch.getAllStickersByName(searchValue);
+            if (result != null && !result.isEmpty()) {
+                return Future.succeededFuture(result);
+            }
+        }
+
+        // Fallback DB - use all method available
+        if (url != null && !url.isEmpty()) {
+            List<Stickers> stickersList = stickersMapper.getStickerByUrl(url);
+            if (stickersList != null && !stickersList.isEmpty()) {
+                result = stickersList;
+            }
+        } else if (packageId != null && packageId > 0) {
+            List<Stickers> stickersList = stickersMapper.getStickerByPackageId(packageId);
+            if (stickersList != null && !stickersList.isEmpty()) {
+                result = stickersList;
+            }
+        } else if (locale != null && !locale.isEmpty()) {
+            List<Stickers> stickersList = stickersMapper.getStickerByLocale(locale);
+            if (stickersList != null && !stickersList.isEmpty()) {
+                result = stickersList;
+            }
+        } else if (order != null && order > 0) {
+            List<Stickers> stickersList = stickersMapper.getStickerByOrder(order);
+            if (stickersList != null && !stickersList.isEmpty()) {
+                result = stickersList;
+            }
+        } else if (viewCount != null && viewCount > 0) {
+            List<Stickers> stickersList = stickersMapper.getStickerByViewCount(viewCount);
+            if (stickersList != null && !stickersList.isEmpty()) {
+                result = stickersList;
+            }
+        } else if (emojis != null && !emojis.isEmpty()) {
+            List<Stickers> stickersList = stickersMapper.getStickerByEmojis(emojis);
+            if (stickersList != null && !stickersList.isEmpty()) {
+                result = stickersList;
+            }
+        }
+        // Nếu không có kết quả, trả về empty list
+        if (result == null) {
+            result = Collections.emptyList();
+        }
+        return Future.succeededFuture(result);
     }
 
     public Future<Void> setSticker(Stickers sticker) {

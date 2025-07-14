@@ -4,7 +4,9 @@ import io.vertx.core.Future;
 import org.example.config.MyBatisUltil;
 import org.example.database.mapper.CategoriesMapper;
 import org.example.database.model.Categories;
+import org.example.search.CategoyRediSearch;
 import org.example.service.cache.CacheService;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -12,11 +14,13 @@ public class CategoriesService {
     private final CacheService cacheService;
     private final CategoriesMapper categoriesMapper;
     private final org.apache.ibatis.session.SqlSession sqlSession;
+    private final CategoyRediSearch categoyRediSearch;
 
-    public CategoriesService(CacheService cacheService) {
+    public CategoriesService(CacheService cacheService, CategoyRediSearch categoyRediSearch) {
         this.cacheService = cacheService;
         this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
         this.categoriesMapper = sqlSession.getMapper(CategoriesMapper.class);
+        this.categoyRediSearch = categoyRediSearch;
     }
 
     public Future<List<Categories>> getAllCategories() {
@@ -50,9 +54,61 @@ public class CategoriesService {
                     return Future.succeededFuture(null);
                 });
     }
-//    public Categories getCategoryById(int id) {
-//        Categories cacheCategories =
-//    }
+
+    public Future<List<Categories>> searchCategories(String name, String url, String locale, Integer order, Integer packageCount) {
+        List<Categories> result = null;
+        String searchValue = null;
+
+        //Xác định giá trị tìm kiếm ưu tiên
+        if (name != null && !name.isEmpty()) {
+            searchValue = name;
+        } else if (url != null && !url.isEmpty()) {
+            searchValue = url;
+        } else if (locale != null && !locale.isEmpty()) {
+            searchValue = locale;
+        } else if (order != null && order > 0) {
+            searchValue = String.valueOf(order);
+        } else if (packageCount != null && packageCount > 0) {
+            searchValue = String.valueOf(packageCount);
+        }
+
+        //find if in redis has data looking for
+        if (searchValue != null) {
+            result = categoyRediSearch.getAllCategoriesByName(searchValue);
+            if (result != null && !result.isEmpty()) {
+                return Future.succeededFuture(result);
+            }
+        }
+
+        //Fallback DB
+        if (name != null && !name.isEmpty()) {
+            List<Categories> categories = categoriesMapper.getCategoriesByName(name);
+            if (categories != null && !categories.isEmpty()) {
+                return Future.succeededFuture(categories);
+            }
+        } else if (url != null && !url.isEmpty()) {
+            List<Categories> categories = categoriesMapper.getCategoriesByUrl(url);
+            if (categories != null && !categories.isEmpty()) {
+                return Future.succeededFuture(categories);
+            }
+        } else if (locale != null && !locale.isEmpty()) {
+            List<Categories> categories = categoriesMapper.getCategoriesByLocale(locale);
+            if (categories != null && !categories.isEmpty()) {
+                return Future.succeededFuture(categories);
+            }
+        } else if (order != null && order > 0) {
+            List<Categories> categories = categoriesMapper.getCategoriesByOrder(order);
+            if (categories != null && !categories.isEmpty()) {
+                return Future.succeededFuture(categories);
+            }
+        } else if (packageCount != null && packageCount > 0) {
+            List<Categories> categories = categoriesMapper.getCategoriesByPackageCount(packageCount);
+            if (categories != null && !categories.isEmpty()) {
+                return Future.succeededFuture(categories);
+            }
+        }
+        return Future.succeededFuture(Collections.emptyList());
+    }
 
     public Future<Void> setCategory(Categories category) {
         if (category == null) {
@@ -62,6 +118,9 @@ public class CategoriesService {
         // Validate required fields
         if (category.getName() == null || category.getName().trim().isEmpty()) {
             return Future.failedFuture("Category name is required");
+        }
+        if (category.getUrl() == null || category.getUrl().trim().isEmpty()) {
+            return Future.failedFuture("Category URL is required");
         }
         if (category.getLocale() == null || category.getLocale().trim().isEmpty()) {
             return Future.failedFuture("Locale is required");
@@ -82,11 +141,11 @@ public class CategoriesService {
             }
             sqlSession.commit(); // Commit the transaction
 
-            // Then update cache
+            //Update cache
             return cacheService.setCategories(category);
         } catch (Exception e) {
             sqlSession.rollback(); // Rollback on error
-            return Future.failedFuture("Failed to save category: " + e.getMessage());
+            return Future.failedFuture("Failed to set category: " + e.getMessage());
         }
     }
 
@@ -95,18 +154,19 @@ public class CategoriesService {
             // Check if category exists
             Categories category = categoriesMapper.getCategoriesById(id);
             if (category == null) {
-                return Future.failedFuture("Category not found with id: " + id);
+                return Future.failedFuture("Category not found with ID: " + id);
             }
 
             // Delete from database
             categoriesMapper.deleteCategories(id);
+            System.out.println("Category deleted with ID: " + id);
             sqlSession.commit(); // Commit the transaction
-            
+
             // Delete from cache
             return cacheService.deleteCategories(id);
         } catch (Exception e) {
             sqlSession.rollback(); // Rollback on error
-            return Future.failedFuture("Failed to delete category: " + e.getMessage());
+            return Future.failedFuture("Failed to delete category with ID: " + e.getMessage());
         }
     }
 

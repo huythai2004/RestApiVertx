@@ -14,16 +14,44 @@
         <result property="emojis" column="emojis"/>
         <result property="isPremium" column="isPremium"/>
     </resultMap>
+
     <select id="getAllStickers" resultMap="StickersResultMap">
         Select * from stickers
     </select>
+
     <select id="getStickerById" parameterType="int" resultMap="StickersResultMap">
         Select * from stickers where id = #{id}
     </select>
+
+    <select id="getStickerByUrl" parameterType="String" resultMap="StickersResultMap">
+        Select * from stickers where url = #{url}
+    </select>
+
+    <select id="getStickerByPackageId" parameterType="int" resultMap="StickersResultMap">
+        Select * from stickers where packageId = #{packageId}
+    </select>
+
+    <select id="getStickerByLocale" parameterType="String" resultMap="StickersResultMap">
+        Select * from stickers where locale = #{locale}
+    </select>
+
+    <select id="getStickerByOrder" parameterType="int" resultMap="StickersResultMap">
+        Select * from stickers where `order` = #{order}
+    </select>
+
+    <select id="getStickerByViewCount" parameterType="int" resultMap="StickersResultMap">
+        Select * from stickers where viewCount = #{viewCount}
+    </select>
+
+    <select id="getStickerByEmojis" parameterType="String" resultMap="StickersResultMap">
+        Select * from stickers where emojis = #{emojis}
+    </select>
+
     <insert id="insertSticker" parameterType="org.example.database.model.Stickers">
         Insert into stickers (url, packageId, locale, `order`, viewCount, createdDate, emojis, isPremium)
         Values (#{url}, #{packageId}, #{locale}, #{order}, #{viewCount}, #{createdDate}, #{emojis}, #{isPremium})
     </insert>
+
     <update id="updateSticker" parameterType="org.example.database.model.Stickers">
         Update stickers
         Set url         = #{url},
@@ -36,7 +64,9 @@
             isPremium   = #{isPremium}
         Where id = #{id}
     </update>
+
     <delete id="deleteSticker" parameterType="int">
         Delete from stickers where id = #{id}
     </delete>
+
 </mapper>

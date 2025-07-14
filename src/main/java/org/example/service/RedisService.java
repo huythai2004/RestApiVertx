@@ -27,7 +27,7 @@ public class RedisService {
         poolConfig.setTestOnReturn(true);
         poolConfig.setTestWhileIdle(true);
         poolConfig.setBlockWhenExhausted(true);
-        jedisPooled = new JedisPooled(poolConfig, "localhost", 6379, "Huythai-27112004".isEmpty());
+        jedisPooled = new JedisPooled(poolConfig, "localhost", 6379,"root", "Huythai-27112004");
     }
     public static JedisPooled getRedisPooled() {
         return jedisPooled;

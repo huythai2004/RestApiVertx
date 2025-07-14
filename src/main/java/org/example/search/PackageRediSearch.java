@@ -46,7 +46,7 @@ public class PackageRediSearch extends AbstractRedisSearch<Packages> {
 
     @Override
     protected List<Packages> buildData(List<Document> documents) {
-        List<Packages> packages = new ArrayList<>();
+        List<Packages> packagesList = new ArrayList<>();
         for (Document document : documents) {
             try {
                 Packages pkg = new Packages();
@@ -64,12 +64,12 @@ public class PackageRediSearch extends AbstractRedisSearch<Packages> {
                 pkg.setIsDisplayed(Integer.parseInt(document.get("isDisplayed").toString()) == 1);
                 pkg.setIsPremium(Integer.parseInt(document.get("isPremium").toString()) == 1);
                 pkg.setIsAnimated(Integer.parseInt(document.get("isAnimated").toString()) == 1);
-                packages.add(pkg);
+                packagesList.add(pkg);
             } catch (Exception e) {
                 LOG.error("Error building Package from document: " + e.getMessage());
             }
         }
-        return packages;
+        return packagesList;
     }
 
     @Override
@@ -108,102 +108,26 @@ public class PackageRediSearch extends AbstractRedisSearch<Packages> {
         }
     }
 
-    public List<Packages> getAllPackagesByName(String name) {
-        List<String> conditions = new ArrayList<>();
-        if (name != null && !name.isEmpty()) {
-            conditions.add(String.format("@name:{%s}", name));
-        }
-        String query = String.join(" ", conditions);
-        LOG.info("Query getAllPackageByName: {}", query);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByCreatorName(String creatorName) {
-        List<String> conditions = new ArrayList<>();
-        if (creatorName != null && !creatorName.isEmpty()) {
-            conditions.add(String.format("@creatorName:{%s}", creatorName));
-        }
-        String query = String.join(" ", conditions);
-        LOG.info("Query getAllPackageByCreatorName: {}", query);
-        return search(query, 0, 1000, "creatorName", true);
-    }
-
-    public List<Packages> getAllPackagesByStickerCount(int stickerCount) {
-        String query = String.format("@stickerCount:[%d %d]", stickerCount, stickerCount);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByAddWhatsApp(Boolean addWhatsApp) {
-        List<String> conditions = new ArrayList<>();
-        if (addWhatsApp != null) {
-            conditions.add(String.format("addWhatsApp:%s", addWhatsApp ? "1" : "0"));
-        }
-        String query = String.join(" ", conditions);
-        LOG.info("query getAllPackageByAddWhatsApp:{}", query);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByAddTelegram(Boolean addTelegram) {
-        List<String> conditions = new ArrayList<>();
-        if (addTelegram != null) {
-            conditions.add(String.format("addTelegram:%s", addTelegram ? "1" : "0"));
-        }
-        String query = String.join(" ", conditions);
-        LOG.info("query getAllPackageByAddTelegram:{}", query);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByViewCount(int viewCount) {
-        String query = String.format("@viewCount:[%d %d]", viewCount, viewCount);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByCategoryIds(int categoryId) {
-        String query = String.format("@categoryIds:{%d}", categoryId);
-        LOG.info("query getAllPackageByCategoryIds: {}", query);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByLocale(String locale) {
-        if (locale == null || locale.isEmpty()) {
+    public List<Packages> getAllPackagesByName(String searchValue) {
+        if (searchValue == null || searchValue.isEmpty()) {
             return new ArrayList<>();
         }
-        String query = String.format("@locale:{%s}", locale);
-        LOG.info("Query getAllPackagesByLocale: {}", query);
+
+        // Create query to find parameters
+        String query = String.format("@name:*%s* | @creatorName:*%s* | @addWhatsApp:*%s* | @addTelegram:*%s* | @categoryIds:{%s} | @locale:{%s}", 
+                                   searchValue, searchValue, searchValue, searchValue, searchValue, searchValue);
+        
+        // update find each field numeric if searchValue is number
+        try {
+            int numericValue = Integer.parseInt(searchValue);
+            query += String.format(" | @stickerCount:[%d %d] | @viewCount:[%d %d] | @order:[%d %d] | @isDisplayed:[%d %d] | @isPremium:[%d %d] | @isAnimated:[%d %d]", 
+                                 numericValue, numericValue, numericValue, numericValue, numericValue, numericValue, 
+                                 numericValue, numericValue, numericValue, numericValue, numericValue, numericValue);
+        } catch (NumberFormatException e) {
+            // searchValue không phải là số, bỏ qua các field numeric
+        }
+
+        LOG.info("Query getAllPackagesByName: {}", query);
         return search(query, 0, 1000, "order", true);
     }
-
-    public List<Packages> getAllPackagesByOrder(int order) {
-        String query = String.format("@order:[%d %d]", order, order);
-        LOG.info("Query getAllPackagesByOrder: {}", query);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByIsDisplayed(boolean isDisplayed) {
-        int value = isDisplayed ? 1 : 0;
-        String query = String.format("@isDisplayed:[%d %d]", value, value);
-        LOG.info("Query getAllPackagesByIsDisplayed: {}", query);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByIsPremium(boolean isPremium) {
-        int value = isPremium ? 1 : 0;
-        String query = String.format("@isPremium:[%d %d]", value, value);
-        LOG.info("Query getAllPackagesByIsPremium: {}", query);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByIsAnimated(boolean isAnimated) {
-        int value = isAnimated ? 1 : 0;
-        String query = String.format("@isAnimated:[%d %d]", value, value);
-        LOG.info("Query getAllPackagesByIsAnimated: {}", query);
-        return search(query, 0, 1000, "order", true);
-    }
-
-    public List<Packages> getAllPackagesByCreatedDateRange(long from, long to) {
-        String query = String.format("@createdDate:[%d %d]", from, to);
-        LOG.info("Query getAllPackagesByCreatedDateRange: {}", query);
-        return search(query, 0, 1000, "createdDate", false);
-    }
-
 }

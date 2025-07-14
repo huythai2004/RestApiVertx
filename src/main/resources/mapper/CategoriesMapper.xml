@@ -22,6 +22,22 @@
         Select * from categories where id = #{id}
     </select>
 
+    <select id="getCategoriesByName" parameterType="String" resultMap="CategoryResultMap">
+        SELECT * from categories where name = #{name}
+    </select>
+
+    <select id="getAllCategoriesByLocale" parameterType="String" resultMap="CategoryResultMap">
+            SELECT * from categories where locale = #{locale}
+    </select>
+
+    <select id="getAllCategoriesByOrder" parameterType="int" resultMap="CategoryResultMap">
+        SELECT  * from categories where `order` = #{order}
+    </select>
+
+    <select id="getAllCategoriesByPackageCount" parameterType="int" resultMap="CategoryResultMap">
+        select  * from categories where packageCount = #{packageCount}
+    </select>
+
     <insert id="insertCategories" parameterType="org.example.database.model.Categories">
         Insert into categories (name, url, locale, `order`, isDisplayed, packageCount, createdDate)
         Values (#{name}, #{url}, #{locale}, #{order}, #{isDisplayed}, #{packageCount}, #{createdDate})

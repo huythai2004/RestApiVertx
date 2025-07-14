@@ -15,6 +15,7 @@ public class PackagesService {
     private final PackagesMapper packagesMapper;
     private final org.apache.ibatis.session.SqlSession sqlSession;
     private final PackageRediSearch packageRediSearch;
+
     public PackagesService(CacheService cacheService, PackageRediSearch packageRediSearch) {
         this.cacheService = cacheService;
         this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
@@ -38,8 +39,7 @@ public class PackagesService {
                 });
     }
 
-    public Future<Packages> getPackageById(int id) {
-        //TODO: if complete PackageRediSearch, change cacheService -> PackageRediSearch
+    public Future<Packages> getPackagesById(int id) {
         return cacheService.getPackageById(id)
                 .compose(cached -> {
                     if (cached != null) {
@@ -53,6 +53,90 @@ public class PackagesService {
                     }
                     return Future.succeededFuture(null);
                 });
+    }
+
+    public Future<List<Packages>> searchPackages(String name, String creatorName, Integer stickerCount, String addWhatsApp,
+                                                 String addTelegram, Integer viewCount, Integer categoryIds, String locale, Integer order) {
+        List<Packages> result = null;
+        String searchValue = null;
+
+        // Confirm value to find first
+        if (name != null && !name.isEmpty()) {
+            searchValue = name;
+        } else if (creatorName != null && !creatorName.isEmpty()) {
+            searchValue = creatorName;
+        } else if (stickerCount != null && stickerCount > 0) {
+            searchValue = String.valueOf(stickerCount);
+        } else if (addWhatsApp != null && !addWhatsApp.isEmpty()) {
+            searchValue = addWhatsApp;
+        } else if (addTelegram != null && !addTelegram.isEmpty()) {
+            searchValue = addTelegram;
+        } else if (viewCount != null && viewCount > 0) {
+            searchValue = String.valueOf(viewCount);
+        } else if (categoryIds != null && categoryIds > 0) {
+            searchValue = String.valueOf(categoryIds);
+        } else if (locale != null && !locale.isEmpty()) {
+            searchValue = locale;
+        } else if (order != null && order > 0) {
+            searchValue = String.valueOf(order);
+        }
+
+        // Find in redis if has data
+        if (searchValue != null) {
+            result = packageRediSearch.getAllPackagesByName(searchValue);
+            if (result != null && !result.isEmpty()) {
+                return Future.succeededFuture(result);
+            }
+        }
+
+        // Fallback DB - sử dụng tất cả các method có sẵn
+        if (name != null && !name.isEmpty()) {
+            List<Packages> packages = packagesMapper.getPackageByName(name);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        } else if (creatorName != null && !creatorName.isEmpty()) {
+            List<Packages> packages = packagesMapper.getPackagesByCreatorName(creatorName);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        } else if (stickerCount != null && stickerCount > 0) {
+            List<Packages> packages = packagesMapper.getPackagesByStickerCount(stickerCount);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        } else if (addWhatsApp != null && !addWhatsApp.isEmpty()) {
+            List<Packages> packages = packagesMapper.getPackagesByAddWhatsApp(addWhatsApp);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        } else if (addTelegram != null && !addTelegram.isEmpty()) {
+            List<Packages> packages = packagesMapper.getPackagesByAddTelegram(addTelegram);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        } else if (viewCount != null && viewCount > 0) {
+            List<Packages> packages = packagesMapper.getPackagesByViewCount(viewCount);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        } else if (categoryIds != null && categoryIds > 0) {
+            List<Packages> packages = packagesMapper.getPackagesByCategoryIds(categoryIds);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        } else if (locale != null && !locale.isEmpty()) {
+            List<Packages> packages = packagesMapper.getPackagesByLocale(locale);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        } else if (order != null && order > 0) {
+            List<Packages> packages = packagesMapper.getPackagesByOrder(order);
+            if (packages != null && !packages.isEmpty()) {
+                return Future.succeededFuture(packages);
+            }
+        }
+        return Future.succeededFuture(Collections.emptyList());
     }
 
     public Future<Void> setPackage(Packages packages) {
@@ -76,9 +160,9 @@ public class PackagesService {
 
         try {
             Packages existingPackage = packagesMapper.getPackageById(packages.getId());
-            if(existingPackage != null) {
+            if (existingPackage != null) {
                 packagesMapper.updatePackage(packages);
-            } else  {
+            } else {
                 // Insert new package
                 packagesMapper.insertPackage(packages);
             }
@@ -87,8 +171,8 @@ public class PackagesService {
             //Update cache
             return cacheService.setPackage(packages);
         } catch (Exception e) {
-                sqlSession.rollback();
-                return Future.failedFuture("Failed to set package: " + e.getMessage());
+            sqlSession.rollback();
+            return Future.failedFuture("Failed to set package: " + e.getMessage());
         }
     }
 
@@ -103,10 +187,17 @@ public class PackagesService {
             packagesMapper.deletePackages(id);
             System.out.println("Package deleted with ID: " + id);
             sqlSession.commit();
+
+            //delete from cached
             return cacheService.deletePackages(id);
         } catch (Exception e) {
             sqlSession.rollback();
             return Future.failedFuture("Failed to delete package: " + e.getMessage());
+        }
+    }
+    public  void close() {
+        if (sqlSession != null) {
+            sqlSession.close();
         }
     }
 }
