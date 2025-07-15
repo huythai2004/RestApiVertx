@@ -123,8 +123,8 @@ public class PackageRediSearch extends AbstractRedisSearch<Packages> {
             query += String.format(" | @stickerCount:[%d %d] | @viewCount:[%d %d] | @order:[%d %d] | @isDisplayed:[%d %d] | @isPremium:[%d %d] | @isAnimated:[%d %d]", 
                                  numericValue, numericValue, numericValue, numericValue, numericValue, numericValue, 
                                  numericValue, numericValue, numericValue, numericValue, numericValue, numericValue);
-        } catch (NumberFormatException e) {
-            throw new NumberFormatException(e.getMessage());
+        } catch (RuntimeException e) {
+
         }
 
         LOG.info("Query getAllPackagesByName: {}", query);

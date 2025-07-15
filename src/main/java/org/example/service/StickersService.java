@@ -60,7 +60,7 @@ public class StickersService {
         String searchValue = null;
 
         // Confirm value to find first
-         if (url != null && !url.isEmpty()) {
+        if (url != null && !url.isEmpty()) {
             searchValue = url;
         } else if (packageId != null && packageId > 0) {
             searchValue = String.valueOf(packageId);
@@ -69,7 +69,7 @@ public class StickersService {
         } else if (order != null && order > 0) {
             searchValue = String.valueOf(order);
         } else if (viewCount != null && viewCount > 0) {
-             searchValue = String.valueOf(viewCount);
+            searchValue = String.valueOf(viewCount);
         } else if (emojis != null && !emojis.isEmpty()) {
             searchValue = emojis;
         }
