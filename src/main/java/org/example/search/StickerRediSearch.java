@@ -104,8 +104,8 @@ public class StickerRediSearch extends AbstractRedisSearch<Stickers> {
         try {
             int numericValue = Integer.parseInt(searchValue);
             query += String.format("@order:[%d %d] | @viewCount:[%d %d] | @packageId:[%d %d] | @isPremium:[%d %d]", numericValue, numericValue, numericValue, numericValue);
-        } catch (RuntimeException e) {
-
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException(e.getMessage());
         }
 
         LOG.info("Query getAllStickerByName: {}", query);

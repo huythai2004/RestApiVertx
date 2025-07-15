@@ -102,8 +102,8 @@ public class CategoyRediSearch extends AbstractRedisSearch<Categories> {
         try {
             int numericValue = Integer.parseInt(searchValue);
             query += String.format("| @order:[%d %d] | @isDisplayed:[%d %d] | @packageCount:[%d %d]", numericValue, numericValue, numericValue);
-        } catch (Exception e) {
-
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException(e.getMessage());
         }
 
         LOG.info("Query getAllCategoriesByName: {}", query);

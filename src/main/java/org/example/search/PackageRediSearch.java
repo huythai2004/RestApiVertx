@@ -124,7 +124,7 @@ public class PackageRediSearch extends AbstractRedisSearch<Packages> {
                                  numericValue, numericValue, numericValue, numericValue, numericValue, numericValue, 
                                  numericValue, numericValue, numericValue, numericValue, numericValue, numericValue);
         } catch (NumberFormatException e) {
-            // searchValue không phải là số, bỏ qua các field numeric
+            throw new NumberFormatException(e.getMessage());
         }
 
         LOG.info("Query getAllPackagesByName: {}", query);
