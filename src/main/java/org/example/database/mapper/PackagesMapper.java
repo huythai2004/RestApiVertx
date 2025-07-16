@@ -3,6 +3,7 @@ package org.example.database.mapper;
 import org.apache.ibatis.annotations.*;
 import org.example.database.model.Packages;
 
+import javax.ws.rs.PathParam;
 import java.util.List;
 
 public interface PackagesMapper {
@@ -158,7 +159,7 @@ public interface PackagesMapper {
     })
     List<Packages> getPackagesByViewCount(int viewCount);
 
-    @Select("SELECT * FROM packages WHERE categoryIds = #{categoryIds}")
+    @Select("SELECT * FROM packages WHERE FIND_IN_SET (#{categoryIds}, categoryIds)")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -175,7 +176,7 @@ public interface PackagesMapper {
             @Result(property = "isPremium", column = "isPremium"),
             @Result(property = "isAnimated", column = "isAnimated")
     })
-    List<Packages> getPackagesByCategoryIds(int categoryIds);
+    List<Packages> getPackagesByCategoryIds(@PathParam("categoryIds") int categoryIds);
 
     @Select("SELECT * FROM packages WHERE createdDate = #{createdDate}")
     @Results({

@@ -3,7 +3,10 @@ package org.example.service;
 import io.vertx.core.Future;
 import org.example.config.MyBatisUltil;
 import org.example.database.mapper.CategoriesMapper;
+import org.example.database.mapper.PackagesMapper;
 import org.example.database.model.Categories;
+import org.example.database.model.CategoryWithPackages;
+import org.example.database.model.Packages;
 import org.example.search.CategoyRediSearch;
 import org.example.service.cache.CacheService;
 
@@ -13,6 +16,7 @@ import java.util.List;
 public class CategoriesService {
     private final CacheService cacheService;
     private final CategoriesMapper categoriesMapper;
+    private final PackagesMapper packagesMapper;
     private final org.apache.ibatis.session.SqlSession sqlSession;
     private final CategoyRediSearch categoyRediSearch;
 
@@ -20,6 +24,7 @@ public class CategoriesService {
         this.cacheService = cacheService;
         this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
         this.categoriesMapper = sqlSession.getMapper(CategoriesMapper.class);
+        this.packagesMapper = sqlSession.getMapper(PackagesMapper.class);
         this.categoyRediSearch = categoyRediSearch;
     }
 
@@ -110,6 +115,20 @@ public class CategoriesService {
         return Future.succeededFuture(Collections.emptyList());
     }
 
+    // Get child package
+    public Future<CategoryWithPackages> getCategoriesWithPackage(int id) {
+        try {
+            Categories categoriesData = categoriesMapper.getCategoriesById(id);
+            if (categoriesData == null) {
+                return Future.succeededFuture(null);
+            }
+            List<Packages> packages = packagesMapper.getPackagesByCategoryIds(id);
+            CategoryWithPackages result = new CategoryWithPackages(categoriesData, packages);
+            return  Future.succeededFuture(result);
+        } catch (Exception e) {
+            return Future.failedFuture("Failed to get category with packages: " + e.getMessage());
+        }
+    }
     public Future<Void> setCategory(Categories category) {
         if (category == null) {
             return Future.failedFuture("Invalid category data");

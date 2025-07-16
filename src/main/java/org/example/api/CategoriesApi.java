@@ -36,32 +36,32 @@ public class CategoriesApi {
     private void setupRoutes() {
         router.route().handler(BodyHandler.create());
 
-        // GET all categories
-        router.get("/categories").handler(ctx -> {
-            getAllCategories()
-                    .onSuccess(categories -> {
-                        ctx.response()
-                                .putHeader("content-type", "application/json")
-                                .end(Json.encode(categories));
-                    })
-                    .onFailure(err -> {
-                        JsonObject error = new JsonObject()
-                                .put("error", err.getMessage())
-                                .put("status", 500);
-                        ctx.response()
-                                .setStatusCode(500)
-                                .putHeader("content-type", "application/json")
-                                .end(error.encode());
-                    });
-        });
+//        // GET all categories
+//        router.get("/categories").handler(ctx -> {
+//            getAllCategories()
+//                    .onSuccess(categories -> {
+//                        ctx.response()
+//                                .putHeader("content-type", "application/json")
+//                                .end(Json.encode(categories));
+//                    })
+//                    .onFailure(err -> {
+//                        JsonObject error = new JsonObject()
+//                                .put("error", err.getMessage())
+//                                .put("status", 500);
+//                        ctx.response()
+//                                .setStatusCode(500)
+//                                .putHeader("content-type", "application/json")
+//                                .end(error.encode());
+//                    });
+//        });
 
         // search all categories with no query
-        router.get("/categories/search").handler(ctx -> {
+        router.get("/categories").handler(ctx -> {
             String name = getQueryParam(ctx, "name");
             String url = getQueryParam(ctx, "url");
             String locale = getQueryParam(ctx, "locale");
             String orderParam = getQueryParam(ctx, "order");
-            String packageCountParam = getQueryParam(ctx, "packageCount");
+            String packageCountParam = getQueryParam(ctx, "packageCount ");
 
             Integer packageCount = null;
             Integer order = null;
@@ -134,6 +134,48 @@ public class CategoriesApi {
                     });
         });
 
+        //Get child packages by categoriesIds
+        router.get("/categories/get-by-id").handler(ctx -> {
+            String categoriesParam = getQueryParam(ctx,"categoriesIds");
+            int categoriesIds;
+            try {
+                categoriesIds = Integer.parseInt(categoriesParam);
+            } catch (Exception e) {
+                JsonObject error = new JsonObject()
+                        .put("error", "Invalid packId format. Must be a number")
+                        .put("status", 400);
+                ctx.response()
+                        .setStatusCode(400)
+                        .putHeader("content-type", "application/json")
+                        .end(error.encode());
+                return;
+            }
+            categoriesService.getCategoriesWithPackage(categoriesIds)
+                    .onSuccess(result -> {
+                        if (result != null) {
+                            ctx.response()
+                                    .putHeader("content-type", "application/json")
+                                    .end(Json.encode(result));
+                        } else {
+                            JsonObject error = new JsonObject()
+                                    .put("error", "Categories with id " + categoriesIds + " does not exist")
+                                    .put("status", 404);
+                            ctx.response()
+                                    .setStatusCode(404)
+                                    .putHeader("content-type", "application/json")
+                                    .end(error.encode());
+                        }
+                    })
+                    .onFailure(err -> {
+                        JsonObject error = new JsonObject()
+                                .put("error", err.getMessage())
+                                .put("status", 500);
+                        ctx.response()
+                                .setStatusCode(500)
+                                .putHeader("content-type", "application/json")
+                                .end(error.encode());
+                    });
+        });
         //Get categories by ID
         router.get("/categories/:id").handler(ctx -> {
             String idParam = ctx.pathParam("id");

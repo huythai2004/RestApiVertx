@@ -281,14 +281,6 @@ public class RedisCacheService implements CacheService {
                 });
     }
 
-    //    @Override
-//    public List<Packages> getPackagesByName(String name) {
-//        return redisAPI()
-//                .compose(api -> {
-//                    Promise<Packages> promise = Promise.promise();
-//                    api.send
-//                })
-//    }
     @Override
     public Future<Void> setAllPackages(List<Packages> packages) {
         if (packages == null || packages.isEmpty()) {

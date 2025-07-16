@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class StickerRediSearch extends AbstractRedisSearch<Stickers> {
     private static final Logger LOG = LogManager.getLogger(StickerRediSearch.class);
-    private static final String REDIS_INDEX_STICKER_PREFIX = "idx:sticker";
+    private static final String REDIS_INDEX_STICKER_PREFIX = "idx:stickers";
 
     public StickerRediSearch() {
         super(REDIS_INDEX_STICKER_PREFIX);

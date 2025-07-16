@@ -37,26 +37,8 @@ public class StickersApi {
         //Add body handler to parse JSON request bodies
         router.route().handler(BodyHandler.create());
 
-        // Get all stickers
+        // Get all stickers or search with query parameters
         router.get("/stickers").handler(ctx -> {
-            getAllStickers()
-                    .onSuccess(stickers -> {
-                        ctx.response()
-                                .putHeader("content-type", "application/json")
-                                .end(Json.encode(stickers));
-                    })
-                    .onFailure(err -> {
-                        JsonObject error = new JsonObject()
-                                .put("error", err.getMessage())
-                                .put("status", 500);
-                        ctx.response()
-                                .setStatusCode(500)
-                                .putHeader("content-type", "application/json")
-                                .end(error.encode());
-                    });
-        });
-
-        router.get("/stickers/search").handler(ctx -> {
             String url = getQueryParam(ctx, "url");
             String packageIdParam = getQueryParam(ctx, "packageId");
             String locale = getQueryParam(ctx, "locale");

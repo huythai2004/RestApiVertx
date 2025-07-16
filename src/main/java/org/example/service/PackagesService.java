@@ -3,7 +3,10 @@ package org.example.service;
 import io.vertx.core.Future;
 import org.example.config.MyBatisUltil;
 import org.example.database.mapper.PackagesMapper;
+import org.example.database.mapper.StickersMapper;
+import org.example.database.model.PackageWithStickers;
 import org.example.database.model.Packages;
+import org.example.database.model.Stickers;
 import org.example.search.PackageRediSearch;
 import org.example.service.cache.CacheService;
 
@@ -13,6 +16,7 @@ import java.util.List;
 public class PackagesService {
     private final CacheService cacheService;
     private final PackagesMapper packagesMapper;
+    private final StickersMapper stickersMapper;
     private final org.apache.ibatis.session.SqlSession sqlSession;
     private final PackageRediSearch packageRediSearch;
 
@@ -20,6 +24,7 @@ public class PackagesService {
         this.cacheService = cacheService;
         this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
         this.packagesMapper = sqlSession.getMapper(PackagesMapper.class);
+        this.stickersMapper = sqlSession.getMapper(StickersMapper.class);
         this.packageRediSearch = packageRediSearch;
     }
 
@@ -137,6 +142,20 @@ public class PackagesService {
             }
         }
         return Future.succeededFuture(Collections.emptyList());
+    }
+
+    public Future<PackageWithStickers> getPackageWithStickers(int id) {
+        try {
+            Packages packagesData = packagesMapper.getPackageById(id);
+            if (packagesData == null) {
+                return Future.succeededFuture(null);
+            }
+            List<Stickers> stickers = stickersMapper.getStickerByPackageId(id);
+            PackageWithStickers result = new PackageWithStickers(packagesData, stickers);
+            return  Future.succeededFuture(result);
+        } catch (Exception e) {
+            return Future.failedFuture("Failed to get package with stickers: " + e.getMessage());
+        }
     }
 
     public Future<Void> setPackage(Packages packages) {

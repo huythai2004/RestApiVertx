@@ -34,27 +34,8 @@ public class PackagesApi {
     private void setupRoutes() {
         router.route().handler(BodyHandler.create());
 
-        // Get all packages
+        // Get all packages or search with query parameters
         router.get("/packages").handler(ctx -> {
-            getAllPackages()
-                    .onSuccess(packages -> {
-                        ctx.response()
-                                .putHeader("content-type", "application/json")
-                                .end(Json.encode(packages));
-                    })
-                    .onFailure(err -> {
-                        JsonObject error = new JsonObject()
-                                .put("error", err.getMessage())
-                                .put("status", 500);
-                        ctx.response()
-                                .setStatusCode(500)
-                                .putHeader("content-type", "application/json")
-                                .end(error.encode());
-                    });
-        });
-
-        // Search packages with query parameters
-        router.get("/packages/search").handler(ctx -> {
             // Get query parameters
             String name = getQueryParam(ctx,"name");
             String creatorName = getQueryParam(ctx, "creatorName");
@@ -160,6 +141,49 @@ public class PackagesApi {
                         ctx.response()
                                 .putHeader("content-type", "application/json")
                                 .end(Json.encode(packages));
+                    })
+                    .onFailure(err -> {
+                        JsonObject error = new JsonObject()
+                                .put("error", err.getMessage())
+                                .put("status", 500);
+                        ctx.response()
+                                .setStatusCode(500)
+                                .putHeader("content-type", "application/json")
+                                .end(error.encode());
+                    });
+        });
+
+        //Get child category by categoryIds
+        router.get("/packages/get-by-id").handler(ctx -> {
+            String packIdParam = getQueryParam(ctx,"packageId");
+            int packageId;
+            try {
+                packageId = Integer.parseInt(packIdParam);
+            } catch (Exception e) {
+                JsonObject error = new JsonObject()
+                        .put("error", "Invalid packId format. Must be a number")
+                        .put("status", 400);
+                ctx.response()
+                        .setStatusCode(400)
+                        .putHeader("content-type", "application/json")
+                        .end(error.encode());
+                return;
+            }
+            packagesService.getPackageWithStickers(packageId)
+                    .onSuccess(result -> {
+                        if (result != null) {
+                            ctx.response()
+                                    .putHeader("content-type", "application/json")
+                                    .end(Json.encode(result));
+                        } else {
+                            JsonObject error = new JsonObject()
+                                    .put("error", "Package with id " + packageId + " does not exist")
+                                    .put("status", 404);
+                            ctx.response()
+                                    .setStatusCode(404)
+                                    .putHeader("content-type", "application/json")
+                                    .end(error.encode());
+                        }
                     })
                     .onFailure(err -> {
                         JsonObject error = new JsonObject()
