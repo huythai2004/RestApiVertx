@@ -29,19 +29,22 @@ public class PackagesService {
     }
 
     public Future<List<Packages>> getAllPackages() {
-        return cacheService.getAllPackages()
-                .compose(cachedPackages -> {
-                    if (cachedPackages != null && !cachedPackages.isEmpty()) {
-                        return Future.succeededFuture(cachedPackages);
-                    }
-                    // If not in cache, get from database
-                    List<Packages> packages = packagesMapper.getAllPackages();
-                    if (packages != null && !packages.isEmpty()) {
-                        return cacheService.setAllPackages(packages)
-                                .map(v -> packages);
-                    }
-                    return Future.succeededFuture(Collections.emptyList());
-                });
+        // Just change this a little
+//        return cacheService.getAllPackages()
+//                .compose(cachedPackages -> {
+//                    if (cachedPackages != null && !cachedPackages.isEmpty()) {
+//                        return Future.succeededFuture(cachedPackages);
+//                    }
+//                    // If not in cache, get from database
+//                    List<Packages> packages = packagesMapper.getAllPackages();
+//                    if (packages != null && !packages.isEmpty()) {
+//                        return cacheService.setAllPackages(packages)
+//                                .map(v -> packages);
+//                    }
+//                    return Future.succeededFuture(Collections.emptyList());
+//                });
+        List<Packages> packages = packagesMapper.getAllPackages();
+        return Future.succeededFuture(packages != null ? packages : Collections.emptyList());
     }
 
     public Future<Packages> getPackagesById(int id) {

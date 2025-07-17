@@ -24,19 +24,21 @@ public class StickersService {
     }
 
     public Future<List<Stickers>> getAllStickers() {
-        return cacheService.getAllStickers()
-                .compose(cachedStickers -> {
-                    if (cachedStickers != null && !cachedStickers.isEmpty()) {
-                        return Future.succeededFuture(cachedStickers);
-                    }
-                    // If not in cache, get from database
-                    List<Stickers> stickers = stickersMapper.getAllStickers();
-                    if (stickers != null && !stickers.isEmpty()) {
-                        return cacheService.setAllStickers(stickers)
-                                .map(v -> stickers);
-                    }
-                    return Future.succeededFuture(Collections.emptyList());
-                });
+//        return cacheService.getAllStickers()
+//                .compose(cachedStickers -> {
+//                    if (cachedStickers != null && !cachedStickers.isEmpty()) {
+//                        return Future.succeededFuture(cachedStickers);
+//                    }
+//                    // If not in cache, get from database
+//                    List<Stickers> stickers = stickersMapper.getAllStickers();
+//                    if (stickers != null && !stickers.isEmpty()) {
+//                        return cacheService.setAllStickers(stickers)
+//                                .map(v -> stickers);
+//                    }
+//                    return Future.succeededFuture(Collections.emptyList());
+//                });
+        List<Stickers> stickersList = stickersMapper.getAllStickers();
+        return Future.succeededFuture(stickersList != null ? stickersList : Collections.emptyList());
     }
 
     public Future<Stickers> getStickerById(int id) {

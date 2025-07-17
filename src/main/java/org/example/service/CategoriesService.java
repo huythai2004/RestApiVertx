@@ -29,19 +29,22 @@ public class CategoriesService {
     }
 
     public Future<List<Categories>> getAllCategories() {
-        return cacheService.getAllCategories()
-                .compose(cachedCategories -> {
-                    if (cachedCategories != null && !cachedCategories.isEmpty()) {
-                        return Future.succeededFuture(cachedCategories);
-                    }
-                    // If not in cache, get from database
-                    List<Categories> categories = categoriesMapper.getAllCategories();
-                    if (categories != null && !categories.isEmpty()) {
-                        return cacheService.setAllCategories(categories)
-                                .map(v -> categories);
-                    }
-                    return Future.succeededFuture(Collections.emptyList());
-                });
+        // Just change this a little
+//        return cacheService.getAllCategories()
+//                .compose(cachedCategories -> {
+//                    if (cachedCategories != null && !cachedCategories.isEmpty()) {
+//                        return Future.succeededFuture(cachedCategories);
+//                    }
+//                    // If not in cache, get from database
+//                    List<Categories> categories = categoriesMapper.getAllCategories();
+//                    if (categories != null && !categories.isEmpty()) {
+//                        return cacheService.setAllCategories(categories)
+//                                .map(v -> categories);
+//                    }
+//                    return Future.succeededFuture(Collections.emptyList());
+//                });
+        List<Categories> categories = categoriesMapper.getAllCategories();
+        return Future.succeededFuture(categories != null ? categories : Collections.emptyList());
     }
 
     public Future<Categories> getCategoryById(int id) {
