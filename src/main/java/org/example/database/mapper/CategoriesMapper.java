@@ -6,7 +6,7 @@ import org.example.database.model.Categories;
 import java.util.List;
 
 public interface CategoriesMapper {
-    @Select("SELECT * From categories")
+    @Select("SELECT * FROM categories")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -19,7 +19,7 @@ public interface CategoriesMapper {
     })
     List<Categories> getAllCategories();
 
-    @Select("SELECT * FROM categories where id = #{id}")
+    @Select("SELECT * FROM categories WHERE id = #{id}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -32,7 +32,7 @@ public interface CategoriesMapper {
     })
     Categories getCategoriesById(int id);
 
-    @Select("SELECT * FROM categories where name = #{name}")
+    @Select("SELECT * FROM categories WHERE name = #{name}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -45,7 +45,7 @@ public interface CategoriesMapper {
     })
     List<Categories> getCategoriesByName(String name);
 
-    @Select("SELECT * FROM categories where url = #{url}")
+    @Select("SELECT * FROM categories WHERE url = #{url}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -58,7 +58,7 @@ public interface CategoriesMapper {
     })
     List<Categories> getCategoriesByUrl(String url);
 
-    @Select("SELECT * FROM categories where locale = #{locale}")
+    @Select("SELECT * FROM categories WHERE locale = #{locale}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -71,7 +71,7 @@ public interface CategoriesMapper {
     })
     List<Categories> getCategoriesByLocale(String locale);
 
-    @Select("SELECT * FROM categories where order = #{order}")
+    @Select("SELECT * FROM categories WHERE `order` = #{order}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -84,7 +84,7 @@ public interface CategoriesMapper {
     })
     List<Categories> getCategoriesByOrder(int order);
 
-    @Select("SELECT * FROM categories where packageCount = #{packageCount}")
+    @Select("SELECT * FROM categories WHERE packageCount = #{packageCount}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "name", column = "name"),
@@ -96,7 +96,6 @@ public interface CategoriesMapper {
             @Result(property = "createdDate", column = "createdDate")
     })
     List<Categories> getCategoriesByPackageCount(int packageCount);
-
 
     @Insert("INSERT INTO categories (name, url, locale, `order`, isDisplayed, packageCount, createdDate)" +
             " VALUES (#{name}, #{url}, #{locale}, #{order}, #{isDisplayed}, #{packageCount}, #{createdDate})")

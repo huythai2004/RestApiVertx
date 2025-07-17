@@ -18,14 +18,14 @@ public class CategoryWithPackages {
     private List<Packages> packages;
 
     public CategoryWithPackages (Categories categories, List<Packages> packages) {
-        this.id = id;
-        this.name = name;
-        this.url = url;
-        this.locale = locale;
-        this.order = order;
-        this.isDisplayed = isDisplayed;
-        this.packageCount = packageCount;
-        this.createdDate = createdDate;
+        this.id = categories.getId();
+        this.name = categories.getName();
+        this.url = categories.getUrl();
+        this.locale = categories.getLocale();
+        this.order = categories.getOrder();
+        this.isDisplayed = categories.getIsDisplayed();
+        this.packageCount = categories.getPackageCount();
+        this.createdDate = categories.getCreatedDate();
         this.packages = packages;
     }
 
@@ -67,14 +67,6 @@ public class CategoryWithPackages {
 
     public void setOrder(int order) {
         this.order = order;
-    }
-
-    public boolean isDisplayed() {
-        return isDisplayed;
-    }
-
-    public void setDisplayed(boolean displayed) {
-        isDisplayed = displayed;
     }
 
     public int getPackageCount() {

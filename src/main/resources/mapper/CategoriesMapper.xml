@@ -26,15 +26,19 @@
         SELECT * from categories where name = #{name}
     </select>
 
-    <select id="getAllCategoriesByLocale" parameterType="String" resultMap="CategoryResultMap">
+    <select id="getCategoriesByUrl" parameterType="String" resultMap="CategoryResultMap">
+        SELECT * from categories where url = #{url}
+    </select>
+
+    <select id="getCategoriesByLocale" parameterType="String" resultMap="CategoryResultMap">
             SELECT * from categories where locale = #{locale}
     </select>
 
-    <select id="getAllCategoriesByOrder" parameterType="int" resultMap="CategoryResultMap">
+    <select id="getCategoriesByOrder" parameterType="int" resultMap="CategoryResultMap">
         SELECT  * from categories where `order` = #{order}
     </select>
 
-    <select id="getAllCategoriesByPackageCount" parameterType="int" resultMap="CategoryResultMap">
+    <select id="getCategoriesByPackageCount" parameterType="int" resultMap="CategoryResultMap">
         select  * from categories where packageCount = #{packageCount}
     </select>
 

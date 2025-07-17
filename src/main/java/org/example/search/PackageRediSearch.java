@@ -49,22 +49,22 @@ public class PackageRediSearch extends AbstractRedisSearch<Packages> {
         List<Packages> packagesList = new ArrayList<>();
         for (Document document : documents) {
             try {
-                Packages pkg = new Packages();
-                pkg.setId(Integer.parseInt(document.get("id").toString()));
-                pkg.setName(document.get("name").toString());
-                pkg.setCreatorName(document.get("creatorName").toString());
-                pkg.setStickerCount(Integer.parseInt(document.get("stickerCount").toString()));
-                pkg.setAddWhatsApp(document.get("addWhatsApp").toString());
-                pkg.setAddTelegram(document.get("addTelegram").toString());
-                pkg.setViewCount(Integer.parseInt(document.get("viewCount").toString()));
-                pkg.setCategoryIds(document.get("categoryIds").toString());
-                pkg.setCreatedDate(Long.parseLong(document.get("createdDate").toString()));
-                pkg.setLocale(document.get("locale").toString());
-                pkg.setOrder(Integer.parseInt(document.get("order").toString()));
-                pkg.setIsDisplayed(Integer.parseInt(document.get("isDisplayed").toString()) == 1);
-                pkg.setIsPremium(Integer.parseInt(document.get("isPremium").toString()) == 1);
-                pkg.setIsAnimated(Integer.parseInt(document.get("isAnimated").toString()) == 1);
-                packagesList.add(pkg);
+                Packages packages = new Packages();
+                packages.setId(Integer.parseInt(document.get("id").toString()));
+                packages.setName(document.get("name").toString());
+                packages.setCreatorName(document.get("creatorName").toString());
+                packages.setStickerCount(Integer.parseInt(document.get("stickerCount").toString()));
+                packages.setAddWhatsApp(document.get("addWhatsApp").toString());
+                packages.setAddTelegram(document.get("addTelegram").toString());
+                packages.setViewCount(Integer.parseInt(document.get("viewCount").toString()));
+                packages.setCategoryIds(document.get("categoryIds").toString());
+                packages.setCreatedDate(Long.parseLong(document.get("createdDate").toString()));
+                packages.setLocale(document.get("locale").toString());
+                packages.setOrder(Integer.parseInt(document.get("order").toString()));
+                packages.setIsDisplayed(Integer.parseInt(document.get("isDisplayed").toString()) == 1);
+                packages.setIsPremium(Integer.parseInt(document.get("isPremium").toString()) == 1);
+                packages.setIsAnimated(Integer.parseInt(document.get("isAnimated").toString()) == 1);
+                packagesList.add(packages);
             } catch (Exception e) {
                 LOG.error("Error building Package from document: " + e.getMessage());
             }

@@ -136,7 +136,7 @@ public class CategoriesApi {
 
         //Get child packages by categoriesIds
         router.get("/categories/get-by-id").handler(ctx -> {
-            String categoriesParam = getQueryParam(ctx,"categoriesIds");
+            String categoriesParam = getQueryParam(ctx,"categoryIds");
             int categoriesIds;
             try {
                 categoriesIds = Integer.parseInt(categoriesParam);

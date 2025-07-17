@@ -27,25 +27,27 @@ public class PackagesApi {
         this.router = Router.router(cacheService.getVertx());
         setupRoutes();
     }
-    private String getQueryParam (RoutingContext ctx, String key) {
+
+    private String getQueryParam(RoutingContext ctx, String key) {
         List<String> values = ctx.queryParam(key);
         return (values != null && !values.isEmpty()) ? values.get(0) : null;
     }
+
     private void setupRoutes() {
         router.route().handler(BodyHandler.create());
 
         // Get all packages or search with query parameters
         router.get("/packages").handler(ctx -> {
             // Get query parameters
-            String name = getQueryParam(ctx,"name");
+            String name = getQueryParam(ctx, "name");
             String creatorName = getQueryParam(ctx, "creatorName");
-            String stickerCountParam = getQueryParam(ctx,"stickerCount");
-            String addWhatsApp = getQueryParam(ctx,"addWhatsApp");
-            String addTelegram = getQueryParam(ctx,"addTelegram");
-            String viewCountParam = getQueryParam(ctx,"viewCount");
-            String categoryIdsParam = getQueryParam(ctx,"categoryIds");
-            String locale = getQueryParam(ctx,"locale");
-            String orderParam = getQueryParam(ctx,"order");
+            String stickerCountParam = getQueryParam(ctx, "stickerCount");
+            String addWhatsApp = getQueryParam(ctx, "addWhatsApp");
+            String addTelegram = getQueryParam(ctx, "addTelegram");
+            String viewCountParam = getQueryParam(ctx, "viewCount");
+            String categoryIdsParam = getQueryParam(ctx, "categoryIds");
+            String locale = getQueryParam(ctx, "locale");
+            String orderParam = getQueryParam(ctx, "order");
 
             // Parse numeric parameters
             Integer stickerCount = null;
@@ -155,7 +157,7 @@ public class PackagesApi {
 
         //Get child category by categoryIds
         router.get("/packages/get-by-id").handler(ctx -> {
-            String packIdParam = getQueryParam(ctx,"packageId");
+            String packIdParam = getQueryParam(ctx, "packageId");
             int packageId;
             try {
                 packageId = Integer.parseInt(packIdParam);

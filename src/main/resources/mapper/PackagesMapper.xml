@@ -23,6 +23,7 @@
     <select id="getAllPackages" resultMap="PackagesResultMap">
     Select * from packages
     </select>
+
     <select id="getPackageById" parameterType="int" resultMap="PackagesResultMap">
         Select * from packages where id = #{id}
     </select>

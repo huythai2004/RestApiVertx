@@ -62,7 +62,7 @@ public interface StickersMapper {
     })
     List<Stickers> getStickerByLocale(String locale);
 
-    @Select("SELECT * FROM stickers WHERE order = #{order}")
+    @Select("SELECT * FROM stickers WHERE `order` = #{order}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "url", column = "url"),
@@ -104,7 +104,7 @@ public interface StickersMapper {
     })
     List<Stickers> getStickerByEmojis(String emojis);
 
-    @Select("SELECT * FROM stickers WHERE id=#{id}")
+    @Select("SELECT * FROM stickers WHERE id = #{id}")
     @Results({
             @Result(property = "id", column = "id"),
             @Result(property = "url", column = "url"),
