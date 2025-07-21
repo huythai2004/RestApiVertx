@@ -61,6 +61,7 @@ public class StickerRediSearch extends AbstractRedisSearch<Stickers> {
         }
         return stickersList;
     }
+    //TODO: tạo thêm 1 class tổng hợp lại các indexing như RedisService và Indexingthêm class ServerVerticle
 
     @Override
     public int initAllIndexing() {

@@ -1,5 +1,7 @@
 package org.example.search;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.service.RedisService;
 import redis.clients.jedis.JedisPooled;
 import redis.clients.jedis.search.*;
@@ -7,10 +9,9 @@ import redis.clients.jedis.search.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public abstract class AbstractRedisSearch<T> {
-    protected static final Logger LOG = Logger.getLogger(AbstractRedisSearch.class.getName());
+    protected static final Logger LOG = LogManager.getLogger(AbstractRedisSearch.class.getName());
     protected final JedisPooled jedisPooled;
     protected final String indexName;
 
@@ -28,18 +29,25 @@ public abstract class AbstractRedisSearch<T> {
 
             jedisPooled.ftCreate(indexName, IndexOptions.defaultOptions().setDefinition(indexDefinition), schema);
         } catch (Exception e) {
-            // Index might already exist or Redis search module not available
-            // This is not critical for the application to work
-            LOG.warning("Warning: Could not create Redis search index " + indexName + ": " + e.getMessage() + ". This is normal if Redis search module is not available or index already exists.");
+            // Index might already exist
+            LOG.warn("Error creating index {}: {}", indexName, e.getMessage());
         }
     }
 
+//    public static boolean isIndexExists(String indexName) {
+//        try {
+//            List<Object> result = jedisPooled.ftList();
+//            return result.contains(indexName);
+//        } catch (Exception e) {
+//            LOG.warning("Check index existence failed for {}: {}", indexName, e.getMessage());
+//        }
+//    }
     public void index(String id, Map<String, Object> fields) {
         try {
             String key = getKeyPrefix() + ":" + id;
             jedisPooled.hset(key, RediSearchUtil.toStringMap(fields));
         } catch (Exception e) {
-            LOG.warning("Error creating index {}: {}" + indexName + ", " + e.getMessage());
+            LOG.error("Error indexing documents {}: {}", id, e.getMessage());
         }
     }
 
@@ -52,7 +60,7 @@ public abstract class AbstractRedisSearch<T> {
             SearchResult result = jedisPooled.ftSearch(indexName, query);
             return buildData(result.getDocuments());
         } catch (Exception e) {
-            LOG.warning("Error searching index {}: {}" + indexName + ", " + e.getMessage());
+            LOG.error("Error searching servers with query '{}': {}", queryString, e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -66,7 +74,7 @@ public abstract class AbstractRedisSearch<T> {
             SearchResult result = jedisPooled.ftSearch(indexName, query);
             return buildData(result.getDocuments());
         } catch (Exception e) {
-            LOG.warning("Error searching index {}: {}" + indexName + ", " + queryString + e.getMessage());
+            LOG.error("Error searching servers with query '{}': {}", queryString, e.getMessage(), e);
             return new ArrayList<>();
         }
     }
@@ -76,7 +84,7 @@ public abstract class AbstractRedisSearch<T> {
             SearchResult result = jedisPooled.ftSearch(indexName, new Query("*").limit(0, 1000).dialect(2));
             return buildData(result.getDocuments());
         } catch (Exception e) {
-            LOG.warning("Error getting data for key {}: {}" + key + ", " + e.getMessage());
+            LOG.error("Error getting all data: {}", e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -86,7 +94,7 @@ public abstract class AbstractRedisSearch<T> {
             String key = getKeyPrefix() + ":" + id;
             jedisPooled.del(key);
         } catch (Exception e) {
-            LOG.warning("Error deleting index {}: {}" + indexName + ", " + e.getMessage());
+            LOG.error("Error deleting document {}: {}", id, e.getMessage());
         }
     }
 

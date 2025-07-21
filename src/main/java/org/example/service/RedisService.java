@@ -27,7 +27,13 @@ public class RedisService {
         poolConfig.setTestOnReturn(true);
         poolConfig.setTestWhileIdle(true);
         poolConfig.setBlockWhenExhausted(true);
-        jedisPooled = new JedisPooled(poolConfig, "localhost", 6379,"root", "Huythai-27112004");
+        jedisPooled = new JedisPooled(poolConfig, "localhost", 6379,"default", "27112004");
+        try {
+            String ping = jedisPooled.ping();
+            LOG.info("Redis ping response: {}", ping);
+        } catch (Exception e) {
+            LOG.error("Redis ping error: {}", e.getMessage(), e);
+        }
     }
     public static JedisPooled getRedisPooled() {
         return jedisPooled;
