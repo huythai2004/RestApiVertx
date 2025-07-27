@@ -56,7 +56,16 @@
             <artifactId>rest.vertx</artifactId>
             <version>1.0.6.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.zandero</groupId>
+            <artifactId>settings</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zandero</groupId>
+            <artifactId>cmd</artifactId>
+            <version>1.2.1</version>
+        </dependency>
         <!-- JSON handling -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
