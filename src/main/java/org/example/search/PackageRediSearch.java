@@ -114,15 +114,16 @@ public class PackageRediSearch extends AbstractRedisSearch<Packages> {
         }
 
         // Create query to find parameters
-        String query = String.format("@name:*%s* | @creatorName:*%s* | @addWhatsApp:*%s* | @addTelegram:*%s* | @categoryIds:{%s} | @locale:{%s}", 
-                                   searchValue, searchValue, searchValue, searchValue, searchValue, searchValue);
-        
+        String query = String.format("@name:*%s* | @creatorName:*%s* | @addWhatsApp:*%s* | @addTelegram:*%s* | @categoryIds:{%s} | @locale:{%s}",
+                searchValue, searchValue, searchValue, searchValue, searchValue, searchValue);
+
         // update find each field numeric if searchValue is number
         try {
             int numericValue = Integer.parseInt(searchValue);
-            query += String.format(" | @stickerCount:[%d %d] | @viewCount:[%d %d] | @order:[%d %d] | @isDisplayed:[%d %d] | @isPremium:[%d %d] | @isAnimated:[%d %d]", 
-                                 numericValue, numericValue, numericValue, numericValue, numericValue, numericValue, 
-                                 numericValue, numericValue, numericValue, numericValue, numericValue, numericValue);
+            query += String.format(" | @stickerCount:[%d %d] | @viewCount:[%d %d] | @order:[%d %d] | @isDisplayed:[%d %d] |" +
+                            " @isPremium:[%d %d] | @isAnimated:[%d %d]",
+                    numericValue, numericValue, numericValue, numericValue, numericValue, numericValue,
+                    numericValue, numericValue, numericValue, numericValue, numericValue, numericValue);
         } catch (RuntimeException e) {
 
         }

@@ -12,11 +12,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CategoyRediSearch extends AbstractRedisSearch<Categories> {
-    private static final Logger LOG = LogManager.getLogger(CategoyRediSearch.class);
+public class CategoryRediSearch extends AbstractRedisSearch<Categories> {
+    private static final Logger LOG = LogManager.getLogger(CategoryRediSearch.class);
     private static final String REDIS_INDEX_CATEGORIES_PREFIX = "idx:categories";
 
-    public CategoyRediSearch() {
+    public CategoryRediSearch() {
         super(REDIS_INDEX_CATEGORIES_PREFIX);
     }
 

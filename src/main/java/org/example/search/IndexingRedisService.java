@@ -61,14 +61,30 @@ public class IndexingRedisService {
     // Initialize categories indexing
     public int initCategoriesIndexing() {
 
-        final  CategoyRediSearch categoyRediSearch = new CategoyRediSearch();
-        int result = categoyRediSearch.initAllIndexing();
-        LOG.info("Categories indexing result: {}", result);
-        return  result;
+//        final  CategoryRediSearch categoryRediSearch = new CategoryRediSearch();
+//        int result = categoryRediSearch.initAllIndexing();
+//        LOG.info("Categories indexing result: {}", result);
+//        return  result;
+
+        LOG.info("Starting categories indexing...");
+        try {
+            final CategoryRediSearch categoryRediSearch = new CategoryRediSearch();
+            int result = categoryRediSearch.initAllIndexing();
+            LOG.info("Categories indexing completed with result: {}", result);
+            return result;
+        } catch (Exception e) {
+            LOG.error("Error during categories indexing: {}", e.getMessage(), e);
+            return 0;
+        }
     }
 
     // Initialize packages indexing
     public int initPackagesIndexing() {
+
+//        final StickerRediSearch stickerRediSearch = new StickerRediSearch();
+//        int result = stickerRediSearch.initAllIndexing();
+//        LOG.info("Stickers indexing result: {}", result);
+//        return result;
         final PackageRediSearch packageRediSearch = new PackageRediSearch();
         int result = packageRediSearch.initAllIndexing();
         LOG.info("Packages indexing result: {}", result);
@@ -77,10 +93,22 @@ public class IndexingRedisService {
 
     // Initialize stickers indexing
     public int initStickersIndexing() {
-        final StickerRediSearch stickerRediSearch = new StickerRediSearch();
-        int result = stickerRediSearch.initAllIndexing();
-        LOG.info("Stickers indexing result: {}", result);
-        return result;
+
+//        final StickerRediSearch stickerRediSearch = new StickerRediSearch();
+//        int result = stickerRediSearch.initAllIndexing();
+//        LOG.info("Stickers indexing result: {}", result);
+//        return result;
+
+        LOG.info("Starting stickers indexing...");
+        try {
+            final StickerRediSearch stickerRediSearch = new StickerRediSearch();
+            int result = stickerRediSearch.initAllIndexing();
+            LOG.info("Stickers indexing completed with result: {}", result);
+            return result;
+        } catch (Exception e) {
+            LOG.error("Error during stickers indexing: {}", e.getMessage(), e);
+            return 0;
+        }
     }
 
     //Mark the index as loaded
@@ -123,19 +151,22 @@ public class IndexingRedisService {
 
             //Drop all indexes
             try {
-                jedisPooled.ftDropIndex(CATEGORIES_INDEX_KEY);
+                //jedisPooled.ftDropIndex(CATEGORIES_INDEX_KEY);
+                jedisPooled.ftDropIndex("idx:categories");
             } catch (Exception e) {
                 LOG.warn("Error deleting categories index: {}", e.getMessage());
             }
 
             try {
-                jedisPooled.ftDropIndex(PACKAGES_INDEX_KEY);
+                //jedisPooled.ftDropIndex(PACKAGES_INDEX_KEY);
+                jedisPooled.ftDropIndex("idx:packages");
             } catch (Exception e) {
                 LOG.warn("Error deleting packages index: {}", e.getMessage());
             }
 
             try {
-                jedisPooled.ftDropIndex(STICKERS_INDEX_KEY);
+                //jedisPooled.ftDropIndex(STICKERS_INDEX_KEY);
+                jedisPooled.ftDropIndex("idx:stickers");
             } catch (Exception e) {
                 LOG.warn("Error deleting stickers index: {}", e.getMessage());
             }

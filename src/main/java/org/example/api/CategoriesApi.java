@@ -7,7 +7,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import org.example.database.model.Categories;
-import org.example.search.CategoyRediSearch;
+import org.example.search.CategoryRediSearch;
 import org.example.service.CategoriesService;
 import org.example.service.cache.CacheService;
 
@@ -23,7 +23,7 @@ public class CategoriesApi {
     private final Router router;
 
     public CategoriesApi(CacheService cacheService) {
-        this.categoriesService = new CategoriesService(cacheService, new CategoyRediSearch());
+        this.categoriesService = new CategoriesService(cacheService, new CategoryRediSearch());
         this.router = Router.router(cacheService.getVertx());
         setupRoutes();
     }
@@ -35,25 +35,6 @@ public class CategoriesApi {
 
     private void setupRoutes() {
         router.route().handler(BodyHandler.create());
-
-//        // GET all categories
-//        router.get("/categories").handler(ctx -> {
-//            getAllCategories()
-//                    .onSuccess(categories -> {
-//                        ctx.response()
-//                                .putHeader("content-type", "application/json")
-//                                .end(Json.encode(categories));
-//                    })
-//                    .onFailure(err -> {
-//                        JsonObject error = new JsonObject()
-//                                .put("error", err.getMessage())
-//                                .put("status", 500);
-//                        ctx.response()
-//                                .setStatusCode(500)
-//                                .putHeader("content-type", "application/json")
-//                                .end(error.encode());
-//                    });
-//        });
 
         // search all categories with no query
         router.get("/categories").handler(ctx -> {

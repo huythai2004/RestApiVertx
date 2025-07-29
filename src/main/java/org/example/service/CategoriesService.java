@@ -7,7 +7,7 @@ import org.example.database.mapper.PackagesMapper;
 import org.example.database.model.Categories;
 import org.example.database.model.CategoryWithPackages;
 import org.example.database.model.Packages;
-import org.example.search.CategoyRediSearch;
+import org.example.search.CategoryRediSearch;
 import org.example.service.cache.CacheService;
 
 import java.util.Collections;
@@ -18,14 +18,14 @@ public class CategoriesService {
     private final CategoriesMapper categoriesMapper;
     private final PackagesMapper packagesMapper;
     private final org.apache.ibatis.session.SqlSession sqlSession;
-    private final CategoyRediSearch categoyRediSearch;
+    private final CategoryRediSearch categoryRediSearch;
 
-    public CategoriesService(CacheService cacheService, CategoyRediSearch categoyRediSearch) {
+    public CategoriesService(CacheService cacheService, CategoryRediSearch categoryRediSearch) {
         this.cacheService = cacheService;
         this.sqlSession = MyBatisUltil.getSqlSessionFactory().openSession();
         this.categoriesMapper = sqlSession.getMapper(CategoriesMapper.class);
         this.packagesMapper = sqlSession.getMapper(PackagesMapper.class);
-        this.categoyRediSearch = categoyRediSearch;
+        this.categoryRediSearch = categoryRediSearch;
     }
 
     public Future<List<Categories>> getAllCategories() {
@@ -82,7 +82,7 @@ public class CategoriesService {
 
         //find if in redis has data looking for
         if (searchValue != null) {
-            result = categoyRediSearch.getAllCategoriesByName(searchValue);
+            result = categoryRediSearch.getAllCategoriesByName(searchValue);
             if (result != null && !result.isEmpty()) {
                 return Future.succeededFuture(result);
             }

@@ -1,20 +1,26 @@
 package org.example;
 
 import io.vertx.core.Vertx;
-import io.vertx.ext.web.Router;
+import org.example.config.ServerSettings;
 import org.example.main.MemCacheMain;
-import org.example.main.RedisCacheMain;
 
 
 public class Main {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
-        System.out.println("Deploying RedisCacheMain...");
-        vertx.deployVerticle(new RedisCacheMain(), res -> {
+        ServerSettings  serverSettings = new ServerSettings();
+        try {
+            serverSettings.parse(args);
+        } catch (Exception e) {
+            System.err.println("Error parsing command line arguments: " + e.getMessage());
+            System.exit(1);
+        }
+        System.out.println("Deploying Service Verticle...");
+        vertx.deployVerticle(new ServiceVerticle(serverSettings), res -> {
             if (res.succeeded()) {
-                System.out.println("RedisCacheMain deployed successfully!");
+                System.out.println("Service Verticle deployed successfully!");
             } else {
-                System.err.println("Failed to deploy RedisCacheMain: " + res.cause().getMessage());
+                System.err.println("Failed to deploy Service Verticle: " + res.cause().getMessage());
             }
         });
 
